@@ -5,7 +5,7 @@ int shot_delay = 3000;
 int shot_duration = 3000;
 int cooldown_period = 10000;
 int game_duration = 300000;
-int vest_threshold = 950; //We need to calibrate this
+int vest_threshold = 500; //We need to calibrate this
 
 // FSM variables
 int deaths = 0;
@@ -119,6 +119,7 @@ state update_fsm(state cur_state, long mils, int trigger_pressed, int sensor_val
         set_vest_lights(OFF);
         next_state = sGAME_OVER;
       }else if ( (mils - saved_clock) >= shot_delay && sensor_value < vest_threshold) { //Transition 6-2
+        set_vest_lights(ON);
         next_state = sNEUTRAL;
       }else if(sensor_value >= vest_threshold){ //Transition 6-4
         set_vest_lights(OFF);
