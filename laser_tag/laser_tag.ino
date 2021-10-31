@@ -5,7 +5,7 @@ int shot_delay = 400;
 int shot_duration = 100;
 int cooldown_period = 10000;
 int game_duration = 300000;
-int vest_threshold = 0; //We need to calibrate this
+int vest_threshold = 400; //We need to calibrate this
 
 // FSM variables
 int deaths = 0;
@@ -26,16 +26,6 @@ void setup() {
    * LAB STEP 3b
    */
 //  calibrate();
-  // Change to 7, 8, 9, 10 based on calibration
-  cap_sensors[UP] = 9;
-  cap_sensors[RIGHT] = 8;
-  cap_sensors[DOWN] = 7;
-  cap_sensors[LEFT] = 10;
-  // Change based on calibration
-  thresholds[UP] = 600;
-  thresholds[RIGHT] = 700;
-  thresholds[DOWN] = 2500;
-  thresholds[LEFT] = 600;
 
   /*
    * LAB STEP 3c
@@ -46,17 +36,8 @@ void setup() {
    * LAB STEP 5
    * Initialize all variables
    */
-  CURRENT_STATE = sDISP_COUNTDOWN;
-  lxb = 0;
-  uxb = 16;
-  xyo random_xyo = random_location_orientation(lxb, uxb);
-  x = random_xyo.x;
-  y = random_xyo.y;
-  o = random_xyo.o;
-  level = 0;
-  time_step = 1000;
+  CURRENT_STATE = sWAITING_FOR_GAME;
   saved_clock = millis();
-  countdown = 3;
   // display something on the LCD
 
 //  test_all_tests();
