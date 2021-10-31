@@ -22,23 +22,14 @@ void setup() {
 
   initialize_system();
 
-  /*
-   * LAB STEP 3b
-   */
+
 //  calibrate();
 
-  /*
-   * LAB STEP 3c
-   */
 //   test_calibration();
   
-  /*
-   * LAB STEP 5
-   * Initialize all variables
-   */
+
   CURRENT_STATE = sWAITING_FOR_GAME;
   saved_clock = millis();
-  // display something on the LCD
 
 //  test_all_tests();
 }
@@ -57,7 +48,7 @@ state update_fsm(state cur_state, long mils, int num_buttons, int last_button) {
       if (received_packet == GAME_START){ //Transition from 1-2
         make_sound(GAME_STARTING);
         set_vest_lights(ON);
-        game_start_timestep = mils;
+        game_start_timestamp = mils;
         next_state = sNEUTRAL;
       }else{
         next_state = sWAITING_FOR_GAME;
