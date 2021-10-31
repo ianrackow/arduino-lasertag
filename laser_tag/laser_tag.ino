@@ -45,7 +45,7 @@ void setup_wifi() {
 
 bool connect_to_webpage() {
   if (client.connect(server_url, 80)) {
-    client.println("GET /api/score/hit?id=" + String(player_id) + " HTTP/1.0");
+    client.println("GET /api/score/hit?id=ian HTTP/1.0");
     client.println("Host: " + String(server_url));
     client.println();
     return true;

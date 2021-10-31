@@ -64,7 +64,19 @@ void set_laser(int level) {
 
 void make_sound(game_sound sound) {
   // play desired sound
+  switch (sound){
+    case PEW:
+      tone(PIEZO, 262, 1000);
+      break;
+    case HIT:
+      tone(PIEZO, 100, 1000);
+      break;
+    default:
+      break;
+  }
 }
 
 void report_hit() {
+  Serial.println("Sending hit");
+  connect_to_webpage();
 }
