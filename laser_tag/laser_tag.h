@@ -8,26 +8,21 @@ int thresholds[4];
 // bool test_all_tests();
 
 /*
- * Initialize capsensors on pins 7, 8, 9, 10 with 11 being the driving pin for all
- */
-CapacitiveSensor s7 = CapacitiveSensor(11, 7);
-CapacitiveSensor s8 = CapacitiveSensor(11, 8);
-CapacitiveSensor s9 = CapacitiveSensor(11, 9);
-CapacitiveSensor s10 = CapacitiveSensor(11, 10);
-
-/*
  * Type (enum and struct) definitions for state, orientation,
  * (xy) coordinate, (xyo) coordinate, (upper, lower) bounds
  */
 typedef enum {
-  sDISP_COUNTDOWN = 1,
-  sWAIT_AFTER_ROT = 2,
-  sMOV = 3,
-  sWAIT_AFTER_MOV = 4,
-  sROT = 5,
-  sWAIT_FOR_BUT = 6,
-  sGAME_OVER = 7,
+  sWAITING_FOR_GAME = 1,
+  sNEUTRAL = 2,
+  sJUST_FIRED = 3,
+  sHIT = 4,
+  sGAME_OVER = 5,
 } state;
+
+typedef enum {
+   GAME_IDLE = 1,
+} server_packet;
+
 
 typedef enum {
   UP = 0,

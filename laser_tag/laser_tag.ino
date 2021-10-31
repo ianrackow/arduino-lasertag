@@ -9,11 +9,10 @@ int vest_threshold = 0; //We need to calibrate this
 
 // FSM variables
 int deaths = 0;
-int game_start_timestamp 0;
-byte x, y;
-orientation o;
-int lxb, uxb;
-int level, time_step, saved_clock, countdown;
+int game_start_timestamp = 0;
+int saved_clock = 0;
+int countdown = 5000;
+server_packet received_packet = GAME_IDLE;
 
 state CURRENT_STATE;
 
