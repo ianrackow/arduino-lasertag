@@ -4,6 +4,27 @@
 const int rs = 0, en = 1, d4 = 2, d5 = 3, d6 = 4, d7 = 5;
 LiquidCrystal lcd(rs, en, d4, d5, d6, d7);
 
+void make_sound(game_sound sound){
+  //TODO
+}
+
+void set_vest_lights(light_status lstatus){
+  //TODO
+}
+
+void set_laser(bool highorlow){
+  //TODO
+}
+
+void report_hit(){
+  //TODO
+}
+
+
+
+
+
+
 /*
  * Initialize system: set random, initialize arrow characters, set up LCD
  */

@@ -1,81 +1,38 @@
-#include <CapacitiveSensor.h>
-#include <LiquidCrystal.h>
-
-int cap_sensors[4];
-int thresholds[4];
-
 // #define TESTING
 // bool test_all_tests();
 
-/*
- * Type (enum and struct) definitions for state, orientation,
- * (xy) coordinate, (xyo) coordinate, (upper, lower) bounds
- */
 typedef enum {
   sWAITING_FOR_GAME = 1,
   sNEUTRAL = 2,
   sJUST_FIRED = 3,
   sHIT = 4,
   sGAME_OVER = 5,
+  sGUN_COOLDOWN = 6,
 } state;
 
 typedef enum {
    GAME_IDLE = 1,
+   GAME_START = 2,
 } server_packet;
 
+typedef enum {
+  ON = 1,
+  OFF = 2,
+} light_status;
 
 typedef enum {
-  UP = 0,
-  DOWN = 1,
-  LEFT = 2,
-  RIGHT = 3,
-} orientation;
-
-typedef struct {
-  byte x;
-  byte y;
-  orientation o;
-} xyo;
-
-typedef struct {
-  int l;
-  int u;
-} lu;
-
-typedef struct {
-  byte x;
-  byte y;
-} xy;
+   GAME_STARTING = 1,
+   PEW = 2,
+   GAME_OVER = 3,
+   HIT = 4,
+   REVIVED = 5,
+} game_sound;
 
 /*
  * Variables to keep track of inputs
  */
 orientation last_button_pressed;
 int num_buttons_pressed;
-
-/*
- * Pixel-by-pixel definitions of cursors with and without tails
- */
-byte arrows[8][8] = {{ B00100, B01110, B11111, B00000, B00000, B00000, B00000, B00000 },
-                     { B00000, B11111, B01110, B00100, B00000, B00000, B00000, B00000 },
-                     { B00100, B01100, B11100, B01100, B00100, B00000, B00000, B00000 },
-                     { B00100, B00110, B00111, B00110, B00100, B00000, B00000, B00000 },
-                     { B00000, B00000, B00000, B00000, B00100, B01110, B11111, B00000 },
-                     { B00000, B00000, B00000, B00000, B00000, B11111, B01110, B00100 },
-                     { B00000, B00000, B00000, B00100, B01100, B11100, B01100, B00100 },
-                     { B00000, B00000, B00000, B00100, B00110, B00111, B00110, B00100 }};
-
-byte tail_arrows[8][8] = {{ B00100, B01110, B11111, B00100, B00000, B00000, B00000, B00000 },
-                          { B00100, B11111, B01110, B00100, B00000, B00000, B00000, B00000 },
-                          { B00100, B01100, B11110, B01100, B00100, B00000, B00000, B00000 },
-                          { B00100, B00110, B01111, B00110, B00100, B00000, B00000, B00000 },
-                          { B00000, B00000, B00000, B00000, B00100, B01110, B11111, B00100 },
-                          { B00000, B00000, B00000, B00000, B00100, B11111, B01110, B00100 },
-                          { B00000, B00000, B00000, B00100, B01100, B11110, B01100, B00100 },
-                          { B00000, B00000, B00000, B00100, B00110, B01111, B00110, B00100 }};
-                          
-// Keep track of which custom cursor is "cached" for which index
-bool arrow_is_tail[8];
 
 /*
  * Setup functions
