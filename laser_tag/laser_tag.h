@@ -52,5 +52,6 @@ void update_inputs();
  */
 void set_vest_lights(bool level);
 void set_laser(bool level);
+void make_sound(game_sound sound);
 
 state update_fsm(state cur_state, long mils, int num_buttons, int last_button);
