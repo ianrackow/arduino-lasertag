@@ -1,2 +1,4 @@
+# Server:
 **/env/
 **/__pycache__/
+**/node_modules/
