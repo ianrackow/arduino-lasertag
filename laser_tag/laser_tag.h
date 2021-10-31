@@ -31,8 +31,9 @@ typedef enum {
 /*
  * Variables to keep track of inputs
  */
-orientation last_button_pressed;
-int num_buttons_pressed;
+int trigger_pressed;
+int sensor_value;
+
 
 /*
  * Setup functions
@@ -49,12 +50,7 @@ void update_inputs();
 /*
  * Helper function definitions
  */
-void reset_buttons();
-void display_level(int l, int c);
-void display_cursor(byte x, byte y, orientation o, bool with_tail, int lxb, int uxb);
-xyo random_location_orientation(int lxb, int uxb);
-orientation random_turn(orientation o, int lxb, int uxb);
-lu shrink_bounds(byte x, orientation o, int lxb, int uxb);
-void display_game_over(int l);
+void set_vest_lights(bool level);
+void set_laser(bool level);
 
 state update_fsm(state cur_state, long mils, int num_buttons, int last_button);
