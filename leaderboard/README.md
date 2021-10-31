@@ -29,3 +29,6 @@ npm install
 ```bash
 npm run start
 ```
+
+* To simulate a call when you fire your weapon, hit the endpoint "`http://localhost:8888/api/score/fired?id=my_id`".
+* To simulate a call when your vest was hit, hit the endpoint "`http://localhost:8888/api/score/hit?id=my_id`".
