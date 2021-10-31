@@ -107,10 +107,6 @@ state update_fsm(state cur_state, long mils, int num_buttons, int last_button) {
         make_sound(GAME_OVER);
         set_vest_lights(OFF);
         next_state = sGAME_OVER;
-      else if ( (mils - saved_clock) >= shot_duration){ // Transition from 3-6
-        set_laser(LOW);
-        saved_clock = mils;
-        next_state = sGUN_COOLDOWN;
       }else if(sensor_value >= vest_threshold){ //Transition from 3-4
         set_laser(LOW);
         set_vest_lights(OFF);
@@ -118,6 +114,10 @@ state update_fsm(state cur_state, long mils, int num_buttons, int last_button) {
         report_hit();
         saved_clock = mils;
         next_state = sHIT;
+      }else if ( (mils - saved_clock) >= shot_duration){ // Transition from 3-6
+        set_laser(LOW);
+        saved_clock = mils;
+        next_state = sGUN_COOLDOWN;
       }else{
         next_state = sJUST_FIRED;
       }
