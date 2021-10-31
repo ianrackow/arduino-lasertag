@@ -1,11 +1,11 @@
 #include "laser_tag.h"
 
 //Global game variables
-int shot_delay = 400;
-int shot_duration = 100;
+int shot_delay = 3000;
+int shot_duration = 3000;
 int cooldown_period = 10000;
 int game_duration = 300000;
-int vest_threshold = 0; //We need to calibrate this
+int vest_threshold = 500;  //We need to calibrate this
 
 // FSM variables
 int deaths = 0;
@@ -18,209 +18,118 @@ state CURRENT_STATE;
 
 void setup() {
   Serial.begin(9600);
-  while (!Serial);
+  while (!Serial)
+    ;
 
   initialize_system();
 
-  /*
-   * LAB STEP 3b
-   */
-//  calibrate();
-  // Change to 7, 8, 9, 10 based on calibration
-  cap_sensors[UP] = 9;
-  cap_sensors[RIGHT] = 8;
-  cap_sensors[DOWN] = 7;
-  cap_sensors[LEFT] = 10;
-  // Change based on calibration
-  thresholds[UP] = 600;
-  thresholds[RIGHT] = 700;
-  thresholds[DOWN] = 2500;
-  thresholds[LEFT] = 600;
+  //  calibrate();
 
-  /*
-   * LAB STEP 3c
-   */
-//   test_calibration();
-  
-  /*
-   * LAB STEP 5
-   * Initialize all variables
-   */
-  CURRENT_STATE = sDISP_COUNTDOWN;
-  lxb = 0;
-  uxb = 16;
-  xyo random_xyo = random_location_orientation(lxb, uxb);
-  x = random_xyo.x;
-  y = random_xyo.y;
-  o = random_xyo.o;
-  level = 0;
-  time_step = 1000;
+  //   test_calibration();
+
+  CURRENT_STATE = sNEUTRAL;
   saved_clock = millis();
-  countdown = 3;
-  // display something on the LCD
+  game_start_timestamp = saved_clock;
 
-//  test_all_tests();
+  //  test_all_tests();
 }
 
 void loop() {
   update_inputs();
-  CURRENT_STATE = update_fsm(CURRENT_STATE, millis(), num_buttons_pressed, last_button_pressed);
-  delay(10);
+  CURRENT_STATE = update_fsm(CURRENT_STATE, millis(), trigger_pressed, sensor_value);
+  Serial.println(CURRENT_STATE);
+  delay(500);
 }
 
-/*
- * LAB STEP 4
- */
-bool at_edge(byte x, byte y, byte o, int lxb, int uxb) {
-  switch (o){
-    case UP:
-      return y == 0;
-      break;
-    case DOWN:
-      return y == 3;
-      break;
-    case LEFT:
-      return x == lxb;
-      break;
-    case RIGHT:
-      return x == uxb - 1;
-      break;
-    default:
-      return false;
-      break;
-  }
-  
-}
-
-/*
- * LAB STEP 4
- */
-xy mv(byte x, byte y, byte o) {
-  switch (o){
-    case UP:
-      y = y - 1;
-      break;
-    case DOWN:
-      y = y + 1;
-      break;
-    case LEFT:
-      x = x - 1;  
-      break;
-    case RIGHT:
-      x = x + 1;
-      break;
-  }
-      
-  xy retval = {x, y};
-  return retval;
-}
-
-/*
- * LAB STEP 7
- */
-state update_fsm(state cur_state, long mils, int num_buttons, int last_button) {
+state update_fsm(state cur_state, long mils, int trigger_pressed, int sensor_value) {
   state next_state = cur_state;
-  switch(cur_state) {
-  case sDISP_COUNTDOWN:
-    if ((mils - saved_clock) >= 500 and countdown >= 0) { // transition 1-1
-      display_level(level, countdown);
-      countdown -= 1;
-      saved_clock = mils;
-      next_state = sDISP_COUNTDOWN;
-    }else if(((mils-saved_clock) >= 500) && countdown <= 0 && !at_edge(x, y, o, lxb, uxb)){ //transition 1-2
-      display_cursor(x,y,o,false,lxb,uxb);
-      saved_clock = mils;
-      reset_buttons();
-      next_state = sWAIT_AFTER_ROT;
-    }else if(((mils-saved_clock) >= 500) && countdown <= 0 && at_edge(x,y,o,lxb,uxb)){ //transition 1-6
-      display_cursor(x,y,o,false,lxb,uxb);
-      saved_clock = mils;
-      reset_buttons();
-      next_state = sWAIT_FOR_BUT;
-    }
-    break;
-  case sWAIT_AFTER_ROT:
-    if ((mils - saved_clock) >= time_step and num_buttons > 0) { // transition 2-3 (a)
-      display_cursor(x, y, o, false, lxb, uxb);
-      lu shrunken = shrink_bounds(x, o, lxb, uxb);
-      lxb = shrunken.l;
-      uxb = shrunken.u;
-      xy new_xy = mv(x, y, o);
-      x = new_xy.x;
-      y = new_xy.y;
-      next_state = sMOV;
-    } else if ((mils - saved_clock) >= time_step and num_buttons == 0) { // transition 2-3 (b)
-      display_cursor(x, y, o, false, lxb, uxb);
-      xy new_xy = mv(x, y, o);
-      x = new_xy.x;
-      y = new_xy.y;
-      next_state = sMOV;
-    } else {
-      next_state = sWAIT_AFTER_ROT;
-    }
-    break;
-  case sMOV:
-    if (lxb < uxb){ //Transition 3-4
-       display_cursor(x, y, o, true, lxb, uxb);
-       saved_clock = mils;
-       reset_buttons();
-       next_state = sWAIT_AFTER_MOV;
-    }else if(lxb == uxb) {// Transition 3-7
-      display_game_over(level);
-      next_state = sGAME_OVER;
-    }
-    break;
-  case sWAIT_AFTER_MOV:
-    if (mils - saved_clock >= time_step) {
-      display_cursor(x,y,o,false,lxb,uxb);
-      
-      o = random_turn(o, lxb, uxb);
-      if (num_buttons != 0) {
-        lu new_bounds = shrink_bounds(x, o, lxb, uxb);
-        lxb = new_bounds.l;
-        uxb = new_bounds.u;
-      }
-  
-      next_state = sROT;
-    }
-    break;
-  case sROT:
-    if (lxb == uxb) { 
-      display_game_over(level);
-      next_state = sGAME_OVER;
-    } else {
-      display_cursor(x,y,o,false,lxb,uxb);
-      saved_clock = mils;
-      reset_buttons();
-      if (at_edge(x, y, o, lxb, uxb)) {
-        next_state = sWAIT_FOR_BUT;
+  switch (cur_state) {
+    case sWAITING_FOR_GAME:
+      if (received_packet == GAME_START) {  //Transition from 1-2
+        make_sound(GAME_STARTING);
+        set_vest_lights(ON);
+        game_start_timestamp = mils;
+        next_state = sNEUTRAL;
       } else {
-        next_state = sWAIT_AFTER_ROT;
+        next_state = sWAITING_FOR_GAME;
       }
-    }
-    break;
-  case sWAIT_FOR_BUT:
-    if (mils - saved_clock >= time_step){
-      if (num_buttons == 1 && last_button == o) {
-        display_level(level + 1, 3);
-        countdown = 2;
-        saved_clock = mils;
-        level += 1;
-        time_step = time_step * 0.95;
-        xyo ret = random_location_orientation(lxb, uxb);
-        x = ret.x;
-        y = ret.y;
-        o = ret.o;
-        next_state = sDISP_COUNTDOWN;
-      } else if ((num_buttons >= 1 && last_button != 0) || num_buttons == 0) {
-        display_game_over(level);
+      break;
+    case sNEUTRAL:
+      if ((mils - game_start_timestamp) >= game_duration) {  //Transition 2-5
+        make_sound(GAME_OVER);
+        set_vest_lights(OFF);
         next_state = sGAME_OVER;
+      } else if (trigger_pressed == 1 && sensor_value < vest_threshold) {  //Transition 2-3
+        set_laser(HIGH);
+        make_sound(PEW);
+        saved_clock = mils;
+        next_state = sJUST_FIRED;
+      } else if (sensor_value >= vest_threshold) {  //Transition from 2-4
+        set_vest_lights(OFF);
+        report_hit();
+        saved_clock = mils;
+        deaths = deaths + 1;
+        next_state = sHIT;
+      } else {
+        next_state = sNEUTRAL;
       }
-  }
-    break;
-  case sGAME_OVER: // no transitions from state 7
-    next_state = sGAME_OVER;
-    break;
+      break;
+    case sJUST_FIRED:
+      if ((mils - game_start_timestamp) >= game_duration) {  //Transition from 3-5
+        make_sound(GAME_OVER);
+        set_vest_lights(OFF);
+        next_state = sGAME_OVER;
+      } else if (sensor_value >= vest_threshold) {  //Transition from 3-4
+        set_laser(LOW);
+        set_vest_lights(OFF);
+        make_sound(HIT);
+        report_hit();
+        saved_clock = mils;
+        next_state = sHIT;
+      } else if ((mils - saved_clock) >= shot_duration) {  // Transition from 3-6
+        set_laser(LOW);
+        saved_clock = mils;
+        next_state = sGUN_COOLDOWN;
+      } else {
+        next_state = sJUST_FIRED;
+      }
+      break;
+    case sHIT:
+      if ((mils - game_start_timestamp) >= game_duration) {  //Transition 4-5
+        make_sound(GAME_OVER);
+        set_vest_lights(OFF);
+        next_state = sGAME_OVER;
+      } else if ((mils - saved_clock) >= cooldown_period) {  //Transition from 4-2
+        make_sound(REVIVED);
+        set_vest_lights(ON);
+        next_state = sNEUTRAL;
+      } else {
+        next_state = sHIT;
+      }
+      break;
+    case sGAME_OVER:
+      //There is no other state to transition to
+      next_state = sGAME_OVER;
+      break;
+    case sGUN_COOLDOWN:
+      if ((mils - game_start_timestamp) >= game_duration) {  //Transition from 6-5
+        make_sound(GAME_OVER);
+        set_vest_lights(OFF);
+        next_state = sGAME_OVER;
+      } else if ((mils - saved_clock) >= shot_delay && sensor_value < vest_threshold) {  //Transition 6-2
+        set_vest_lights(ON);
+        next_state = sNEUTRAL;
+      } else if (sensor_value >= vest_threshold) {  //Transition 6-4
+        set_vest_lights(OFF);
+        make_sound(HIT);
+        report_hit();
+        deaths = deaths + 1;
+        saved_clock = mils;
+        next_state = sHIT;
+      } else {
+        next_state = sGUN_COOLDOWN;
+      }
+      break;
   }
   return next_state;
 }
