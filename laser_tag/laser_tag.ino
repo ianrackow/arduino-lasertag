@@ -16,11 +16,52 @@ server_packet received_packet = GAME_IDLE;
 
 state CURRENT_STATE;
 
+// ########### WIFI CODE ############
+#include <SPI.h>
+#include <WiFi101.h>
+
+WiFiClient client;
+
+byte mac[6];
+char player_id[18];
+
+char server_url[] = "67b8-192-91-235-243.ngrok.io"; // URL for our server
+char ssid[] = "Brown-Guest";  // network SSID (name)
+char pass[] = "";             // for networks that require a password
+int status = WL_IDLE_STATUS;  // the WiFi radio's status
+
+void setup_wifi() {
+  WiFi.macAddress(mac);
+  sprintf(player_id, "%2X:%2X:%2X:%2X:%2X:%2X", mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]);
+
+  // attempt to connect to WiFi network:
+  while (status != WL_CONNECTED) {
+    Serial.print("Attempting to connect to: ");
+    Serial.println(ssid);
+    status = WiFi.begin(ssid);  // WiFi.begin(ssid, pass) for password
+    delay(10000);
+  }
+}
+
+bool connect_to_webpage() {
+  if (client.connect(server_url, 80)) {
+    client.println("GET /api/score/hit?id=" + String(player_id) + " HTTP/1.0");
+    client.println("Host: cs.brown.edu");
+    client.println();
+    return true;
+  } else {
+    Serial.println("Failed to fetch webpage");
+    return false;
+  }
+}
+// ##################################
+
 void setup() {
   Serial.begin(9600);
   while (!Serial)
     ;
 
+  setup_wifi();
   initialize_system();
 
   //  calibrate();
