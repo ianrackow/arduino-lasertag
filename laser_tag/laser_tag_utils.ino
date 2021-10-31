@@ -43,7 +43,9 @@ void test_calibration() {
  */
 void update_inputs() {
   trigger_pressed = digitalRead(TRIGGER);
+  Serial.println(trigger_pressed);
   sensor_value = analogRead(LIGHT_SENSOR);  
+  Serial.println(sensor_value);
 }
 
 void set_vest_lights(int level){
@@ -69,4 +71,8 @@ void set_laser(int level){
 void make_sound(game_sound sound){
 
   // play desired sound
+}
+
+void report_hit(){
+  
 }

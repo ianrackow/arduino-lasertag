@@ -1,11 +1,11 @@
 #include "laser_tag.h"
 
 //Global game variables
-int shot_delay = 400;
-int shot_duration = 100;
+int shot_delay = 3000;
+int shot_duration = 3000;
 int cooldown_period = 10000;
 int game_duration = 300000;
-int vest_threshold = 400; //We need to calibrate this
+int vest_threshold = 950; //We need to calibrate this
 
 // FSM variables
 int deaths = 0;
@@ -28,20 +28,22 @@ void setup() {
 //   test_calibration();
   
 
-  CURRENT_STATE = sWAITING_FOR_GAME;
+  CURRENT_STATE = sNEUTRAL;
   saved_clock = millis();
+  game_start_timestamp = saved_clock;
 
 //  test_all_tests();
 }
 
 void loop() {
   update_inputs();
-  CURRENT_STATE = update_fsm(CURRENT_STATE, millis(), num_buttons_pressed, last_button_pressed);
-  delay(10);
+  CURRENT_STATE = update_fsm(CURRENT_STATE, millis(), trigger_pressed, sensor_value);
+  Serial.println(CURRENT_STATE);
+  delay(500);
 }
 
 
-state update_fsm(state cur_state, long mils, int num_buttons, int last_button) {
+state update_fsm(state cur_state, long mils, int trigger_pressed, int sensor_value) {
   state next_state = cur_state;
   switch(cur_state) {
     case sWAITING_FOR_GAME:
@@ -63,7 +65,7 @@ state update_fsm(state cur_state, long mils, int num_buttons, int last_button) {
         set_laser(HIGH);
         make_sound(PEW);
         saved_clock = mils;
-        next_state = sFIRING;
+        next_state = sJUST_FIRED;
       }else if( sensor_value >= vest_threshold){ //Transition from 2-4
         set_vest_lights(OFF);
         report_hit();
@@ -95,11 +97,11 @@ state update_fsm(state cur_state, long mils, int num_buttons, int last_button) {
       }
       break;
     case sHIT:
-     if( (mils - game_start_timestamp_ >= game_duration){ //Transition 4-5
+     if( (mils - game_start_timestamp) >= game_duration){ //Transition 4-5
         make_sound(GAME_OVER);
         set_vest_lights(OFF);
         next_state = sGAME_OVER;
-      else if( (mils - saved_clock) >= cooldown_period){ //Transition from 4-2
+     }else if( (mils - saved_clock) >= cooldown_period){ //Transition from 4-2
         make_sound(REVIVED);
         set_vest_lights(ON);
         next_state = sNEUTRAL;
@@ -116,7 +118,7 @@ state update_fsm(state cur_state, long mils, int num_buttons, int last_button) {
         make_sound(GAME_OVER);
         set_vest_lights(OFF);
         next_state = sGAME_OVER;
-      else if ( (mils - saved_clock) >= shot_delay && sensor_value < vest_threshold) { //Transition 6-2
+      }else if ( (mils - saved_clock) >= shot_delay && sensor_value < vest_threshold) { //Transition 6-2
         next_state = sNEUTRAL;
       }else if(sensor_value >= vest_threshold){ //Transition 6-4
         set_vest_lights(OFF);
