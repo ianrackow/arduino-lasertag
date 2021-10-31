@@ -6,20 +6,15 @@ int LIGHT_SENSOR = A1;
 int VEST_LIGHTS = 7;
 int PIEZO = 4;
 
-
-
-
 /*
  * Initialize system: set random, initialize arrow characters, set up LCD
  */
 void initialize_system() {
-
   pinMode(LASER, OUTPUT);
   pinMode(VEST_LIGHTS, OUTPUT);
   pinMode(PIEZO, OUTPUT);
   pinMode(LIGHT_SENSOR, INPUT);
   pinMode(TRIGGER, INPUT);
-
 }
 
 /*
@@ -34,7 +29,6 @@ void calibrate() {
  * have been set up correctly
  */
 void test_calibration() {
-
 }
 
 /*
@@ -44,12 +38,12 @@ void test_calibration() {
 void update_inputs() {
   trigger_pressed = digitalRead(TRIGGER);
   Serial.println(trigger_pressed);
-  sensor_value = analogRead(LIGHT_SENSOR);  
+  sensor_value = analogRead(LIGHT_SENSOR);
   Serial.println(sensor_value);
 }
 
-void set_vest_lights(int level){
-  if (level == ON){
+void set_vest_lights(int level) {
+  if (level == ON) {
     Serial.println("Vest on");
     digitalWrite(VEST_LIGHTS, HIGH);
   } else {
@@ -58,8 +52,8 @@ void set_vest_lights(int level){
   }
 }
 
-void set_laser(int level){
-  if (level == ON){
+void set_laser(int level) {
+  if (level == ON) {
     Serial.println("Laser on");
     digitalWrite(LASER, HIGH);
   } else {
@@ -68,11 +62,9 @@ void set_laser(int level){
   }
 }
 
-void make_sound(game_sound sound){
-
+void make_sound(game_sound sound) {
   // play desired sound
 }
 
-void report_hit(){
-  
+void report_hit() {
 }

@@ -5,7 +5,7 @@ int shot_delay = 3000;
 int shot_duration = 3000;
 int cooldown_period = 10000;
 int game_duration = 300000;
-int vest_threshold = 500; //We need to calibrate this
+int vest_threshold = 500;  //We need to calibrate this
 
 // FSM variables
 int deaths = 0;
@@ -18,21 +18,20 @@ state CURRENT_STATE;
 
 void setup() {
   Serial.begin(9600);
-  while (!Serial);
+  while (!Serial)
+    ;
 
   initialize_system();
 
+  //  calibrate();
 
-//  calibrate();
-
-//   test_calibration();
-  
+  //   test_calibration();
 
   CURRENT_STATE = sNEUTRAL;
   saved_clock = millis();
   game_start_timestamp = saved_clock;
 
-//  test_all_tests();
+  //  test_all_tests();
 }
 
 void loop() {
@@ -42,70 +41,69 @@ void loop() {
   delay(500);
 }
 
-
 state update_fsm(state cur_state, long mils, int trigger_pressed, int sensor_value) {
   state next_state = cur_state;
-  switch(cur_state) {
+  switch (cur_state) {
     case sWAITING_FOR_GAME:
-      if (received_packet == GAME_START){ //Transition from 1-2
+      if (received_packet == GAME_START) {  //Transition from 1-2
         make_sound(GAME_STARTING);
         set_vest_lights(ON);
         game_start_timestamp = mils;
         next_state = sNEUTRAL;
-      }else{
+      } else {
         next_state = sWAITING_FOR_GAME;
       }
       break;
     case sNEUTRAL:
-     if( (mils - game_start_timestamp) >= game_duration){ //Transition 2-5
+      if ((mils - game_start_timestamp) >= game_duration) {  //Transition 2-5
         make_sound(GAME_OVER);
         set_vest_lights(OFF);
         next_state = sGAME_OVER;
-      }else if (trigger_pressed == 1 && sensor_value < vest_threshold){ //Transition 2-3
+      } else if (trigger_pressed == 1 && sensor_value < vest_threshold) {  //Transition 2-3
         set_laser(HIGH);
         make_sound(PEW);
         saved_clock = mils;
         next_state = sJUST_FIRED;
-      }else if( sensor_value >= vest_threshold){ //Transition from 2-4
+      } else if (sensor_value >= vest_threshold) {  //Transition from 2-4
         set_vest_lights(OFF);
         report_hit();
         saved_clock = mils;
         deaths = deaths + 1;
         next_state = sHIT;
-      }else{
+      } else {
         next_state = sNEUTRAL;
       }
       break;
     case sJUST_FIRED:
-      if( (mils - game_start_timestamp) >= game_duration){ //Transition from 3-5
+      if ((mils - game_start_timestamp) >= game_duration) {  //Transition from 3-5
         make_sound(GAME_OVER);
         set_vest_lights(OFF);
         next_state = sGAME_OVER;
-      }else if(sensor_value >= vest_threshold){ //Transition from 3-4
+      } else if (sensor_value >= vest_threshold) {  //Transition from 3-4
         set_laser(LOW);
         set_vest_lights(OFF);
         make_sound(HIT);
         report_hit();
         saved_clock = mils;
         next_state = sHIT;
-      }else if ( (mils - saved_clock) >= shot_duration){ // Transition from 3-6
+      } else if ((mils - saved_clock) >= shot_duration) {  // Transition from 3-6
         set_laser(LOW);
         saved_clock = mils;
         next_state = sGUN_COOLDOWN;
-      }else{
+      } else {
         next_state = sJUST_FIRED;
       }
       break;
     case sHIT:
-     if( (mils - game_start_timestamp) >= game_duration){ //Transition 4-5
+      if ((mils - game_start_timestamp) >= game_duration) {  //Transition 4-5
         make_sound(GAME_OVER);
         set_vest_lights(OFF);
         next_state = sGAME_OVER;
-     }else if( (mils - saved_clock) >= cooldown_period){ //Transition from 4-2
+      } else if ((mils - saved_clock) >= cooldown_period) {  //Transition from 4-2
         make_sound(REVIVED);
         set_vest_lights(ON);
         next_state = sNEUTRAL;
-      }else{
+      } else {
         next_state = sHIT;
       }
       break;
@@ -114,21 +112,21 @@ state update_fsm(state cur_state, long mils, int trigger_pressed, int sensor_val
       next_state = sGAME_OVER;
       break;
     case sGUN_COOLDOWN:
-      if( (mils - game_start_timestamp) >= game_duration){ //Transition from 6-5
+      if ((mils - game_start_timestamp) >= game_duration) {  //Transition from 6-5
         make_sound(GAME_OVER);
         set_vest_lights(OFF);
         next_state = sGAME_OVER;
-      }else if ( (mils - saved_clock) >= shot_delay && sensor_value < vest_threshold) { //Transition 6-2
+      } else if ((mils - saved_clock) >= shot_delay && sensor_value < vest_threshold) {  //Transition 6-2
         set_vest_lights(ON);
         next_state = sNEUTRAL;
-      }else if(sensor_value >= vest_threshold){ //Transition 6-4
+      } else if (sensor_value >= vest_threshold) {  //Transition 6-4
         set_vest_lights(OFF);
         make_sound(HIT);
         report_hit();
         deaths = deaths + 1;
         saved_clock = mils;
         next_state = sHIT;
-      }else{
+      } else {
         next_state = sGUN_COOLDOWN;
       }
       break;

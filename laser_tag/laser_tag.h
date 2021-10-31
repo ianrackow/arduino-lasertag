@@ -11,8 +11,8 @@ typedef enum {
 } state;
 
 typedef enum {
-   GAME_IDLE = 1,
-   GAME_START = 2,
+  GAME_IDLE = 1,
+  GAME_START = 2,
 } server_packet;
 
 typedef enum {
@@ -21,11 +21,11 @@ typedef enum {
 } light_status;
 
 typedef enum {
-   GAME_STARTING = 1,
-   PEW = 2,
-   GAME_OVER = 3,
-   HIT = 4,
-   REVIVED = 5,
+  GAME_STARTING = 1,
+  PEW = 2,
+  GAME_OVER = 3,
+  HIT = 4,
+  REVIVED = 5,
 } game_sound;
 
 /*
@@ -33,7 +33,6 @@ typedef enum {
  */
 int trigger_pressed;
 int sensor_value;
-
 
 /*
  * Setup functions
