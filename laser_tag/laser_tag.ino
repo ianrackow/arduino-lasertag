@@ -32,7 +32,7 @@ int status = WL_IDLE_STATUS;  // the WiFi radio's status
 
 void setup_wifi() {
   WiFi.macAddress(mac);
-  sprintf(player_id, "%2X:%2X:%2X:%2X:%2X:%2X", mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]);
+  sprintf(player_id, "%2X%2X%2X%2X%2X%2X", mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]);
 
   // attempt to connect to WiFi network:
   while (status != WL_CONNECTED) {
@@ -45,7 +45,8 @@ void setup_wifi() {
 
 bool connect_to_webpage() {
   if (client.connect(server_url, 80)) {
-    client.println("GET /api/score/hit?id=ian HTTP/1.0");
+    Serial.println("player_id: " + String(player_id));
+    client.println("GET /api/score/hit?id=" + String(player_id) + " HTTP/1.0");
     client.println("Host: " + String(server_url));
     client.println();
     return true;
