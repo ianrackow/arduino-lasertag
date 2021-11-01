@@ -32,8 +32,8 @@ int status = WL_IDLE_STATUS;  // the WiFi radio's status
 
 void setup_wifi() {
   WiFi.macAddress(mac);
-  sprintf(player_id, "%2X%2X%2X%2X%2X%2X", mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]);
-
+  sprintf(player_id, "%02X%02X%02X%02X%02X%02X", mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]);
+  Serial.println(player_id);
   // attempt to connect to WiFi network:
   while (status != WL_CONNECTED) {
     Serial.print("Attempting to connect to: ");
@@ -70,6 +70,7 @@ void setup() {
   //   test_calibration();
 
   CURRENT_STATE = sNEUTRAL;
+  set_vest_lights(ON);
   saved_clock = millis();
   game_start_timestamp = saved_clock;
 
