@@ -1,4 +1,5 @@
-#include "laser_tag.h"
+#include <Arduino.h>
+#include "laser_tag_utils.h"
 
 //Global game variables
 int shot_delay = 3000;

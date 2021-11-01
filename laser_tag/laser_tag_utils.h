@@ -1,3 +1,5 @@
+#include <Arduino.h>
+#include "laser_tag.h"
 // PIN ASSIGNMENTS
 
 int LASER = 3;
@@ -42,7 +44,7 @@ void update_inputs() {
   Serial.println(sensor_value);
 }
 
-void set_vest_lights(int level) {
+void set_vest_lights(light_status level) {
   if (level == ON) {
     Serial.println("Vest on");
     digitalWrite(VEST_LIGHTS, HIGH);

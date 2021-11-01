@@ -49,9 +49,11 @@ void update_inputs();
 /*
  * Helper function definitions
  */
-void set_vest_lights(bool level);
-void set_laser(bool level);
+void set_vest_lights(light_status level);
+void set_laser(int level);
 void make_sound(game_sound sound);
 void report_hit();
 
 state update_fsm(state cur_state, long mils, int num_buttons, int last_button);
+
+bool connect_to_webpage();
