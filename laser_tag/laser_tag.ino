@@ -1,12 +1,13 @@
 #include <Arduino.h>
+
 #include "laser_tag_utils.h"
 
-//Global game variables
+// Global game variables
 int shot_delay = 3000;
 int shot_duration = 3000;
 int cooldown_period = 10000;
 int game_duration = 300000;
-int vest_threshold = 500;  //We need to calibrate this
+int vest_threshold = 500;  // We need to calibrate this
 
 // FSM variables
 int deaths = 0;
@@ -26,10 +27,10 @@ WiFiClient client;
 byte mac[6];
 char player_id[18];
 
-char server_url[] = "67b8-192-91-235-243.ngrok.io"; // URL for our server
-char ssid[] = "Brown-Guest";  // network SSID (name)
-char pass[] = "";             // for networks that require a password
-int status = WL_IDLE_STATUS;  // the WiFi radio's status
+char server_url[] = "67b8-192-91-235-243.ngrok.io";  // URL for our server
+char ssid[] = "Brown-Guest";                         // network SSID (name)
+char pass[] = "";                                    // for networks that require a password
+int status = WL_IDLE_STATUS;                         // the WiFi radio's status
 
 void setup_wifi() {
   WiFi.macAddress(mac);
@@ -89,7 +90,7 @@ state update_fsm(state cur_state, long mils, int trigger_pressed, int sensor_val
   state next_state = cur_state;
   switch (cur_state) {
     case sWAITING_FOR_GAME:
-      if (received_packet == GAME_START) {  //Transition from 1-2
+      if (received_packet == GAME_START) {  // Transition from 1-2
         make_sound(GAME_STARTING);
         set_vest_lights(ON);
         game_start_timestamp = mils;
@@ -99,16 +100,16 @@ state update_fsm(state cur_state, long mils, int trigger_pressed, int sensor_val
       }
       break;
     case sNEUTRAL:
-      if ((mils - game_start_timestamp) >= game_duration) {  //Transition 2-5
+      if ((mils - game_start_timestamp) >= game_duration) {  // Transition 2-5
         make_sound(GAME_OVER);
         set_vest_lights(OFF);
         next_state = sGAME_OVER;
-      } else if (trigger_pressed == 1 && sensor_value < vest_threshold) {  //Transition 2-3
+      } else if (trigger_pressed == 1 && sensor_value < vest_threshold) {  // Transition 2-3
         set_laser(HIGH);
         make_sound(PEW);
         saved_clock = mils;
         next_state = sJUST_FIRED;
-      } else if (sensor_value >= vest_threshold) {  //Transition from 2-4
+      } else if (sensor_value >= vest_threshold) {  // Transition from 2-4
         set_vest_lights(OFF);
         report_hit();
         saved_clock = mils;
@@ -119,11 +120,11 @@ state update_fsm(state cur_state, long mils, int trigger_pressed, int sensor_val
       }
       break;
     case sJUST_FIRED:
-      if ((mils - game_start_timestamp) >= game_duration) {  //Transition from 3-5
+      if ((mils - game_start_timestamp) >= game_duration) {  // Transition from 3-5
         make_sound(GAME_OVER);
         set_vest_lights(OFF);
         next_state = sGAME_OVER;
-      } else if (sensor_value >= vest_threshold) {  //Transition from 3-4
+      } else if (sensor_value >= vest_threshold) {  // Transition from 3-4
         set_laser(LOW);
         set_vest_lights(OFF);
         make_sound(HIT);
@@ -139,11 +140,11 @@ state update_fsm(state cur_state, long mils, int trigger_pressed, int sensor_val
       }
       break;
     case sHIT:
-      if ((mils - game_start_timestamp) >= game_duration) {  //Transition 4-5
+      if ((mils - game_start_timestamp) >= game_duration) {  // Transition 4-5
         make_sound(GAME_OVER);
         set_vest_lights(OFF);
         next_state = sGAME_OVER;
-      } else if ((mils - saved_clock) >= cooldown_period) {  //Transition from 4-2
+      } else if ((mils - saved_clock) >= cooldown_period) {  // Transition from 4-2
         make_sound(REVIVED);
         set_vest_lights(ON);
         next_state = sNEUTRAL;
@@ -152,18 +153,18 @@ state update_fsm(state cur_state, long mils, int trigger_pressed, int sensor_val
       }
       break;
     case sGAME_OVER:
-      //There is no other state to transition to
+      // There is no other state to transition to
       next_state = sGAME_OVER;
       break;
     case sGUN_COOLDOWN:
-      if ((mils - game_start_timestamp) >= game_duration) {  //Transition from 6-5
+      if ((mils - game_start_timestamp) >= game_duration) {  // Transition from 6-5
         make_sound(GAME_OVER);
         set_vest_lights(OFF);
         next_state = sGAME_OVER;
-      } else if ((mils - saved_clock) >= shot_delay && sensor_value < vest_threshold) {  //Transition 6-2
+      } else if ((mils - saved_clock) >= shot_delay && sensor_value < vest_threshold) {  // Transition 6-2
         set_vest_lights(ON);
         next_state = sNEUTRAL;
-      } else if (sensor_value >= vest_threshold) {  //Transition 6-4
+      } else if (sensor_value >= vest_threshold) {  // Transition 6-4
         set_vest_lights(OFF);
         make_sound(HIT);
         report_hit();

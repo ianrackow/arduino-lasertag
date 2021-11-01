@@ -1,4 +1,5 @@
 #include <Arduino.h>
+
 #include "laser_tag.h"
 // PIN ASSIGNMENTS
 
@@ -66,7 +67,7 @@ void set_laser(int level) {
 
 void make_sound(game_sound sound) {
   // play desired sound
-  switch (sound){
+  switch (sound) {
     case PEW:
       tone(PIEZO, 262, 1000);
       break;
