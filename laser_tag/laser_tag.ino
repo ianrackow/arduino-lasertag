@@ -27,7 +27,8 @@ WiFiClient client;
 byte mac[6];
 char player_id[18];
 
-char server_url[] = "67b8-192-91-235-243.ngrok.io";  // URL for our server
+// char server_url[] = "67b8-192-91-235-243.ngrok.io";  // URL for our server
+char server_url[] = "http://104.131.46.88/" // URL for our server
 char ssid[] = "Brown-Guest";                         // network SSID (name)
 char pass[] = "";                                    // for networks that require a password
 int status = WL_IDLE_STATUS;                         // the WiFi radio's status

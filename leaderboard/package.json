@@ -4,7 +4,8 @@
   "description": "Server for the leaderboard.",
   "main": "backend/app.js",
   "scripts": {
-    "start": "nodemon --exec babel-node backend/app.js"
+    "start": "nodemon --exec babel-node backend/app.js",
+    "tunnel": "ngrok http -subdomain=cs1600-lasertag 8888"
   },
   "dependencies": {
     "body-parser": "^1.19.0",
