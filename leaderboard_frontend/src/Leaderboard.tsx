@@ -1,15 +1,7 @@
 import {
-  Button,
-  Card,
-  CardActions,
-  CardContent,
-  CardHeader,
   Grid,
   GridProps,
-  MenuItem,
   Paper,
-  Select,
-  Slider,
   Table,
   TableBody,
   TableCell,
@@ -18,10 +10,11 @@ import {
   TableRow,
   Typography,
 } from "@mui/material";
-import { orderBy, startCase, countBy, random, maxBy } from "lodash-es";
-import { useMemo, useState } from "react";
+import { orderBy, startCase, countBy } from "lodash-es";
+import currentGameData from "./data/current-game.json";
 
 type Player = { name: string; taggedBy: string[] };
+type Players = { [id: string]: Pick<Player, "taggedBy"> };
 type Column = Player & {
   points: number;
   tags: string[];
@@ -30,21 +23,26 @@ type Column = Player & {
 const playersToColumns = (players: Player[]): Column[] => {
   const tags: Record<string, string[]> = {};
 
+  // convert taggedBy to tagged, a list of who was tagged by who to a list of who tagged who
   players.forEach((player) => {
     player.taggedBy.forEach((tagger) => {
       tags[tagger] = [...(tags[tagger] ?? []), player.name];
     });
   });
 
-  return players.map((player) => {
-    const playerTags = tags[player.name] ?? [];
+  return orderBy(
+    players.map((player) => {
+      const playerTags = tags[player.name] ?? [];
 
-    return {
-      ...player,
-      tags: playerTags,
-      points: 20 + playerTags.length * 10 - player.taggedBy.length * 3,
-    };
-  });
+      return {
+        ...player,
+        tags: playerTags,
+        points: 20 + playerTags.length * 10 - player.taggedBy.length * 3,
+      };
+    }),
+    ["points"],
+    ["desc"]
+  );
 };
 
 const formatTags = (tags: string[]) => (
@@ -62,6 +60,8 @@ const formatTags = (tags: string[]) => (
   </>
 );
 
+const formatPlayerName = (name: string) => `Player ${name}`;
+
 const tableColumns: {
   [Property in keyof Column]: boolean;
 } = {
@@ -71,139 +71,27 @@ const tableColumns: {
   points: true,
 };
 
-const players = ["Alex", "Andy", "Jason", "David", "Ian"];
-const getRandomAssortment = (name: string) => {
-  const notSelf = players.filter((playerName) => playerName !== name);
-  const numToGenerate = random(0, 30);
+export const LeaderboardPage = (props: GridProps) => {
+  // cast to players to unknown first cuz weird typescript stuff
+  const playerData = currentGameData as unknown as Players;
 
-  const generated = [];
-  for (let i = 0; i < numToGenerate; i++) {
-    const index = random(notSelf.length - 1);
-    generated.push(notSelf[index]);
-  }
-  return generated;
-};
+  const players = Object.entries(playerData).map(([id, { taggedBy }]) => {
+    // convert ids to player {id}
+    const formattedPlayer: Player = {
+      taggedBy: taggedBy.map((taggerId) => formatPlayerName(taggerId)),
+      name: formatPlayerName(id),
+    };
+    return formattedPlayer;
+  });
 
-const generateColumns = () =>
-  orderBy(
-    playersToColumns([
-      {
-        name: "Andy",
-        taggedBy: getRandomAssortment("Andy"),
-      },
-      {
-        name: "Alex",
-        taggedBy: getRandomAssortment("Alex"),
-      },
-      {
-        name: "Ian",
-        taggedBy: getRandomAssortment("Ian"),
-      },
-      {
-        name: "David",
-        taggedBy: getRandomAssortment("David"),
-      },
-      {
-        name: "Jason",
-        taggedBy: getRandomAssortment("Jason"),
-      },
-    ]),
-    ["points"],
-    ["desc"]
-  );
-
-const getHighestGeneration = (trials: number, maximize = true) => {
-  const generated = [...new Array(trials)].map(() => generateColumns());
-  console.log("generated", generated.length);
-  return (
-    maxBy(generated, (x) => (maximize ? x[0].points : -1 * x[0].points)) ?? []
-  );
-};
-
-export const LeaderboardPage = ({
-  players,
-  ...props
-}: { players: Player[] } & GridProps) => {
-  const defaultTrials = 1;
-
-  const initialTrials = useMemo(
-    () => getHighestGeneration(defaultTrials),
-    [defaultTrials]
-  );
-
-  const [maxTrials, setMaxTrials] = useState(defaultTrials);
-  const [maximizeScore, setMaximizeScore] = useState(true);
-
-  const [columns, setColumns] = useState(initialTrials);
+  const columns = playersToColumns(players);
 
   return (
-    <>
-      <Grid container justifyContent="center" {...props}>
-        <Grid item>
-          <Card
-            style={{
-              marginTop: 30,
-              marginBottom: 30,
-              paddingLeft: 10,
-              paddingRight: 10,
-            }}
-            variant="outlined"
-          >
-            <CardHeader title="Stimulating Simulation Station" />
-            <CardContent>
-              <Typography variant="body1">
-                This will run <i>n</i> simulations of the game and take the
-                highest or lowest scoring trial
-              </Typography>
-              <br />
-
-              <Typography variant="body2">
-                Number of simulations to run (makes min/max more dramatic)
-              </Typography>
-              <Slider
-                min={1}
-                max={1000}
-                defaultValue={defaultTrials}
-                onChange={(_, newValue) => setMaxTrials(newValue as number)}
-                valueLabelDisplay="auto"
-              />
-              <Typography variant="body2">
-                Maximize or minimize score
-              </Typography>
-              <Select
-                onChange={(e) => setMaximizeScore(e.target.value === "max")}
-                defaultValue="max"
-                size="small"
-              >
-                <MenuItem value="max">Max</MenuItem>
-                <MenuItem value="min">Min</MenuItem>
-              </Select>
-              <br />
-              <br />
-              <Typography variant="body2">Generate new data</Typography>
-            </CardContent>
-            <CardActions>
-              <Button size="small" color="inherit">
-                no lmao
-              </Button>
-              <Button
-                size="small"
-                color="primary"
-                onClick={() =>
-                  setColumns(getHighestGeneration(maxTrials, maximizeScore))
-                }
-              >
-                sure
-              </Button>
-            </CardActions>
-          </Card>
-        </Grid>
-
-        <Grid item xs={12}>
-          <Leaderboard columns={columns} />
-        </Grid>
+    <Grid container justifyContent="center" {...props}>
+      <Grid item xs={12}>
+        <Leaderboard columns={columns} />
       </Grid>
-    </>
+    </Grid>
   );
 };
 

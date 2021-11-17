@@ -55,7 +55,7 @@ app.use('/api/score', apiScore)
 // —————————————————
 
 // Handle errors
-app.use((err, req, res, next) => {
+app.use((err: any, req: any, res: any, next: any) => {
     // set locals, only providing error in development
     res.locals.message = err.message
     res.locals.error = req.app.get('env') === 'development' ? err : {}
@@ -85,7 +85,7 @@ import httpModule from 'http'
 /**
  * Event handler for server 'error' event.
  */
- function onError(err) {
+ function onError(err: any) {
     if (err.syscall !== 'listen') {
         throw err
     }
@@ -103,14 +103,14 @@ import httpModule from 'http'
             process.exit(1)
             break
         default:
-            throw error
+            throw new Error('oh dear')
     }
 }
 
 /**
  * Event listener for server listening event.
  */
-const onListening = (server) => () => {
+const onListening = (server: any) => () => {
     const addr = server.address()
     const bind = typeof addr === 'string' ? 'pipe ' + addr : 'port ' + addr.port
     console.log('HTTP: Listening on', bind)
@@ -121,7 +121,7 @@ const onListening = (server) => () => {
  */
 function start() {
     // Build a server; inject Express app.
-    const server = httpModule.Server(app)
+    const server = new httpModule.Server(app)
     server.listen(PORT)
     server.on('error', onError)
     server.on('listening', onListening(server))
