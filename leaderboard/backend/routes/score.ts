@@ -1,13 +1,7 @@
 import { createHash } from "crypto";
 import express from "express";
-import {
-  copyFileSync,
-  existsSync,
-  readFileSync,
-  renameSync,
-  writeFileSync,
-} from "fs";
-import path, { resolve } from "path";
+import { copyFileSync, existsSync, readFileSync, writeFileSync } from "fs";
+import path from "path";
 
 type Player = { taggedBy: string[] };
 type Players = { [id: string]: Player | undefined };

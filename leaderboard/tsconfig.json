@@ -3,6 +3,7 @@
       "target": "es6", 
       "module": "commonjs", 
       "sourceMap": true, 
+      "rootDir": "./backend", 
       "outDir": "./build", 
       "strict": true, 
       "moduleResolution": "node", 
