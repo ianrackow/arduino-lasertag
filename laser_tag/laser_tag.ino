@@ -21,8 +21,13 @@ state CURRENT_STATE;
 // ########### WIFI CODE ############
 #include <SPI.h>
 #include <WiFi101.h>
+#include <WiFiUdp.h>
+#include <NTPClient.h>
+
+WiFiUDP ntpUDP;
 
 WiFiClient client;
+NTPClient timeClient(ntpUDP);
 
 byte mac[6];
 char player_id[18];
