@@ -61,21 +61,46 @@ bool test_transition(state start_state,
                      state_vars start_state_vars,
                      state_vars end_state_vars,
                      bool verbos) {
+  deaths = start_state_vars.deaths;
+  game_start_timestamp = start_state_vars.game_start_timestamp;
+  saved_clock = start_state_vars.saved_clock;
+  state result_state = update_fsm(start_state, test_state_inputs.mils, test_state_inputs.trigger_pressed, test_state_inputs.sensor_value, test_state_inputs.received_packet);
+  bool passed_test = (end_state == result_state and
+                      deaths == end_state_vars.deaths and
+                      game_start_timestamp == end_state_vars.game_start_timestamp and
+                      saved_clock == end_state_vars.saved_clock);
+  if (!verbos) {
+    return passed_test;
+  } else if (passed_test) {
+    char s_to_print[200];
+    sprintf(s_to_print, "Test from %s to %s PASSED", s2str(start_state), s2str(end_state));
+    Serial.println(s_to_print);
+    return true;
+  } else {
+    char s_to_print[200];
+    /* Serial.println(s2str(start_state)); */
+    /* sprintf(s_to_print, "Test from %s to %s FAILED", s2str(start_state), s2str(end_state)); */
+    /* Serial.println(s_to_print); */
+    /* sprintf(s_to_print, "End state expected: %s | actual: %s", s2str(end_state), s2str(result_state)); */
+    /* Serial.println(s_to_print); */
+    /* sprintf(s_to_print, "Inputs: mils %ld | num_buttons %d | last_button %s", test_state_inputs.mils, test_state_inputs.num_buttons, o2str(test_state_inputs.last_button)); */
+    /* Serial.println(s_to_print); */
+    /* sprintf(s_to_print, "          %2s | %2s | %5s | %3s | %3s | %5s | %9s | %11s | %9s", "x", "y", "o", "lxb", "uxb", "level", "time_step", "saved_clock", "countdown"); */
+    /* Serial.println(s_to_print); */
+    /* sprintf(s_to_print, "expected: %2d | %2d | %5s | %3d | %3d | %5d | %9d | %11d | %9d", end_state_vars.x, end_state_vars.y, o2str(end_state_vars.o), end_state_vars.lxb, end_state_vars.uxb, end_state_vars.level, end_state_vars.time_step, end_state_vars.saved_clock, end_state_vars.countdown); */
+    /* Serial.println(s_to_print); */
+    /* sprintf(s_to_print, "actual:   %2d | %2d | %5s | %3d | %3d | %5d | %9d | %11d | %9d", x, y, o2str(o), lxb, uxb, level, time_step, saved_clock, countdown); */
+    /* Serial.println(s_to_print); */
+    return false;
   return verbos;
 }
 
-const state test_states_in[19] = {(state)1, (state)1, (state)1, (state)1, (state)2, (state)2, (state)2, (state)3, (state)3, (state)4, (state)4, (state)4, (state)5, (state)5, (state)5, (state)6, (state)6, (state)6, (state)7};
-const state test_states_out[19] = {(state)1, (state)1, (state)2, (state)6, (state)2, (state)3, (state)3, (state)4, (state)7, (state)4, (state)5, (state)5, (state)2, (state)6, (state)7, (state)6, (state)1, (state)7, (state)7};
-const state_inputs test_input[19] = {
-    /* {2,LEFT,600}, {4,LEFT,1600}, {1,DOWN,1600}, {1,LEFT,1600}, {0,LEFT,9000}, {2,LEFT,1600}, {0,DOWN,2000}, {2,DOWN,5000}, {0,DOWN,1}, {1,UP,12000}, {1,LEFT,5000}, {0,LEFT,5000}, {4,DOWN,2000}, {4,RIGHT,6000}, {4,LEFT,1}, {2,RIGHT,4000}, {1,RIGHT,6000}, {0,LEFT,7000}, {1,LEFT,3} */
-};
-const state_vars test_in_vars[19] = {
-    /* {1,2,UP,2,0,2,2,500,3}, {2,1,RIGHT,1,4,2,3,1000,0}, {2,1,LEFT,2,16,2,3,1000,-1}, {9,2,RIGHT,1,10,4,2,1000,-1}, {3,1,LEFT,1,2,0,700,8600,1}, {3,0,DOWN,0,4,0,500,1000,3}, {0,3,UP,0,13,1,1000,1000,1}, {5,0,LEFT,3,10,0,3,4000,1}, {4,1,RIGHT,2,2,5,0,0,2}, {4,4,LEFT,1,0,0,300,11900,1}, {6,0,RIGHT,4,15,0,600,4200,1}, {6,0,DOWN,4,15,2,600,4200,3}, {1,1,UP,0,16,0,2,1200,2}, {1,3,DOWN,0,16,0,0,5000,1}, {3,0,LEFT,9,9,8,3,2,1}, {3,1,RIGHT,0,1,0,600,3900,0}, {13,2,RIGHT,4,14,5,1000,4900,-1}, {9,2,LEFT,4,2,25,600,6200,4}, {4,1,UP,1,1,1,2,3,2} */
-};
-const state_vars test_out_vars[19] = {
-    /* {1, 2, UP, 2, 0, 2, 2, 500, 3}, {2, 1, RIGHT, 1, 4, 2, 3, 1600, -1}, {2, 1, LEFT, 2, 16, 2, 3, 1600, -1}, {9, 2, RIGHT, 1, 10, 4, 2, 1600, -1}, {3, 1, LEFT, 1, 2, 0, 700, 8600, 1}, {3, 1, DOWN, 1, 4, 0, 500, 1000, 3}, {0, 2, UP, 0, 13, 1, 1000, 1000, 1}, {4, 0, LEFT, 3, 10, 0, 3, 5000, 1}, {4, 1, RIGHT, 2, 2, 5, 0, 0, 2}, {4, 4, LEFT, 1, 0, 0, 300, 11900, 1}, {6, 0, DOWN, 5, 15, 0, 600, 4200, 1}, {6, 0, LEFT, 4, 15, 2, 600, 4200, 3}, {1, 1, UP, 0, 16, 0, 2, 2000, 2}, {1, 3, DOWN, 0, 16, 0, 0, 6000, 1}, {3, 0, LEFT, 9, 9, 8, 3, 2, 1}, {3, 1, RIGHT, 0, 1, 0, 600, 3900, 0}, {4, 0, UP, 4, 14, 6, 950, 6000, 2}, {9, 2, LEFT, 4, 2, 25, 600, 6200, 4}, {4, 1, UP, 1, 1, 1, 2, 3, 2} */
-};
-const int num_tests = 19;
+const state test_states_in[17] = {(state) 1, (state) 1, (state) 2, (state) 2, (state) 2, (state) 2, (state) 3, (state) 3, (state) 3, (state) 3, (state) 4, (state) 4, (state) 4, (state) 6, (state) 6, (state) 6, (state) 6};
+const state test_states_out[17] = {(state) 1, (state) 2, (state) 2, (state) 3, (state) 4, (state) 5, (state) 3, (state) 4, (state) 5, (state) 6, (state) 4, (state) 2, (state) 5, (state) 6, (state) 2, (state) 4, (state) 5};
+const state_inputs test_input[17] = {{0,0,0,GAME_IDLE}, {4000,0,0,GAME_START}, {9000,0,400,0}, {5000,1,400,0}, {60000,0,600,0}, {0,0,0,0}, {60000,0,400,0}, {60000,0,600,0}, {300201,0,0,0}, {60000,0,400,0}, {60000,0,0,0}, {60000,0,0,0}, {503000,0,0,0}, {60000,0,400,0}, {60000,0,400,0}, {60000,0,600,0}, {310000,0,0,0}};
+const state_vars test_in_vars[17] = {{0,0,0}, {0,0,0}, {0,287000,0}, {0,2000,2000}, {0,50000,0}, {0,3000,0}, {0,50000,59950}, {0,50000,0}, {0,200,0}, {0,50000,100}, {0,50000,55000}, {0,50000,50000}, {0,203000,0}, {0,50000,59800}, {0,50000,59600}, {1,50000,40000}, {0,10000,0}};
+const state_vars test_out_vars[17] = {{0,0,0}, {0,4000,0}, {0,287000,0}, {0,2000,5000}, {0,50000,60000}, {0,304000,0}, {0,50000,59950}, {1,50000,60000}, {0,200,0}, {0,50000,60000}, {0,50000,55000}, {0,50000,50000}, {0,203000,0}, {0,50000,59800}, {0,50000,59600}, {2,50000,60000}, {0,10000,0}};
+const int num_tests = 17;
 
 /*
  * Runs through all the test cases defined above

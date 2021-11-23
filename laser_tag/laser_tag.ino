@@ -82,12 +82,12 @@ void setup() {
 
 void loop() {
   update_inputs();
-  CURRENT_STATE = update_fsm(CURRENT_STATE, millis(), trigger_pressed, sensor_value);
+  CURRENT_STATE = update_fsm(CURRENT_STATE, millis(), trigger_pressed, sensor_value, received_packet);
   Serial.println(CURRENT_STATE);
   delay(500);
 }
 
-state update_fsm(state cur_state, long mils, int trigger_pressed, int sensor_value) {
+state update_fsm(state cur_state, long mils, int trigger_pressed, int sensor_value, server_packet received_packet) {
   state next_state = cur_state;
   switch (cur_state) {
     case sWAITING_FOR_GAME:
