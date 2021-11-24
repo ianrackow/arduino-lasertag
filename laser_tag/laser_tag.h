@@ -1,5 +1,5 @@
-// #define TESTING
-// bool test_all_tests();
+#define TESTING
+
 
 typedef enum {
   sWAITING_FOR_GAME = 1,
@@ -11,6 +11,7 @@ typedef enum {
 } state;
 
 typedef enum {
+  INVALID_PACKET = 0,
   GAME_IDLE = 1,
   GAME_START = 2,
 } server_packet;
@@ -53,7 +54,7 @@ void set_vest_lights(light_status level);
 void set_laser(int level);
 void make_sound(game_sound sound);
 void report_hit();
+bool connect_to_webpage();
+bool test_all_tests();
 
 state update_fsm(state cur_state, long mils, int trigger_pressed, int sensor_value, server_packet received_packet);
-
-bool connect_to_webpage();

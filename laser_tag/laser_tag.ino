@@ -1,10 +1,8 @@
-#include <Arduino.h>
-
-#include "laser_tag_utils.h"
+#include "laser_tag.h"
 
 // Global game variables
-int shot_delay = 3000;
-int shot_duration = 3000;
+int shot_delay = 400;
+int shot_duration = 100;
 int cooldown_period = 10000;
 int game_duration = 300000;
 int vest_threshold = 500;  // We need to calibrate this
@@ -34,8 +32,10 @@ char player_id[18];
 
 // char server_url[] = "67b8-192-91-235-243.ngrok.io";  // URL for our server
 char server_url[] = "http://104.131.46.88/";  // URL for our server
-char ssid[] = "Brown-Guest";                  // network SSID (name)
-char pass[] = "";                             // for networks that require a password
+//char ssid[] = "Brown-Guest";                  // network SSID (name)
+//char pass[] = "";                             // for networks that require a password
+char ssid[] = "29 CREIGHTON - 1";  
+char pass[] = "R3m0t3L3@rn1ng!";
 int status = WL_IDLE_STATUS;                  // the WiFi radio's status
 
 void setup_wifi() {
@@ -46,7 +46,9 @@ void setup_wifi() {
   while (status != WL_CONNECTED) {
     Serial.print("Attempting to connect to: ");
     Serial.println(ssid);
-    status = WiFi.begin(ssid);  // WiFi.begin(ssid, pass) for password
+    Serial.println(pass);
+    status = WiFi.begin(ssid, pass);  // WiFi.begin(ssid, pass) for password
+    Serial.println(WiFi.status());
     delay(10000);
   }
 }
@@ -82,14 +84,18 @@ void setup() {
   saved_clock = millis();
   game_start_timestamp = saved_clock;
 
-  //  test_all_tests();
+  #ifdef TESTING
+  test_all_tests();
+  #endif
 }
 
 void loop() {
+  #ifndef TESTING
   update_inputs();
   CURRENT_STATE = update_fsm(CURRENT_STATE, millis(), trigger_pressed, sensor_value, received_packet);
   Serial.println(CURRENT_STATE);
   delay(500);
+  #endif
 }
 
 state update_fsm(state cur_state, long mils, int trigger_pressed, int sensor_value, server_packet received_packet) {
@@ -136,6 +142,7 @@ state update_fsm(state cur_state, long mils, int trigger_pressed, int sensor_val
         make_sound(HIT);
         report_hit();
         saved_clock = mils;
+        deaths = deaths + 1;
         next_state = sHIT;
       } else if ((mils - saved_clock) >= shot_duration) {  // Transition from 3-6
         set_laser(LOW);

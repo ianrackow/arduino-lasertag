@@ -1,6 +1,6 @@
-#include <Arduino.h>
+//#include <Arduino.h>
 
-#include "laser_tag.h"
+//#include "laser_tag.h"
 // PIN ASSIGNMENTS
 
 int LASER = 3;
@@ -55,6 +55,30 @@ void set_vest_lights(light_status level) {
   }
 }
 
+#ifdef TESTING
+
+//Don't actually turn the laser on for testing so we don't accidentally blind anyone
+//We just assume that the hit worked
+void set_laser(int level) {
+  if (level == ON) {
+    Serial.println("Laser on");
+    sensor_value = vest_threshold + 1000;
+  } else {
+    Serial.println("Laser off");
+  }
+}
+
+//Don't actually play any sounds
+void make_sound(game_sound sound) {
+}
+
+//Don't try to connect to actual webpage, this is for later integration testing
+void report_hit() {
+  Serial.println("Sending hit");
+}
+
+#else
+
 void set_laser(int level) {
   if (level == ON) {
     Serial.println("Laser on");
@@ -83,3 +107,5 @@ void report_hit() {
   Serial.println("Sending hit");
   connect_to_webpage();
 }
+
+#endif
