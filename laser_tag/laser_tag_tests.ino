@@ -1,33 +1,7 @@
-//#include "laser_tag.h"
+#include <Arduino.h>
 
-/*
- * A struct to keep all four state inputs in one place
- */
-typedef struct {
-  long mils;
-  int trigger_pressed;
-  int sensor_value;
-  server_packet received_packet;
-} state_inputs;
+#include "laser_tag.h"
 
-/*
- * A struct to keep all four state variables in one place
- */
-typedef struct {
-  int deaths;
-  int game_start_timestamp;
-  int saved_clock;
-  int countdown;
-} state_vars;
-
-bool test_transition(state start_state,
-                     state end_state,
-                     state_inputs test_state_inputs,
-                     state_vars start_state_vars,
-                     state_vars end_state_vars,
-                     bool verbos);
-
-bool test_all_tests();
 /*
  * Helper function for printing states
  */
@@ -95,30 +69,30 @@ bool test_transition(state start_state,
     Serial.println(s_to_print);
     return true;
   } else {
-      char s_to_print[200];
-      Serial.println(s2str(start_state));
-      sprintf(s_to_print, "Test from %s to %s FAILED", s2str(start_state), s2str(end_state));
-      Serial.println(s_to_print); 
-      sprintf(s_to_print, "End state expected: %s | actual: %s", s2str(end_state), s2str(result_state)); 
-      Serial.println(s_to_print);
-      sprintf(s_to_print, "Inputs: mils %ld | trigger_pressed %d | sensor_value %d | received_packet %s", test_state_inputs.mils, test_state_inputs.trigger_pressed, test_state_inputs.sensor_value, p2str(test_state_inputs.received_packet)); 
-      Serial.println(s_to_print);
-      sprintf(s_to_print, "    %s | %s | %s", "deaths", "game_start_timestep", "saved_clock");
-      Serial.println(s_to_print);
-      sprintf(s_to_print, "expected: %d | %d | %d", end_state_vars.deaths, end_state_vars.game_start_timestamp, end_state_vars.saved_clock);
-      Serial.println(s_to_print);
-      sprintf(s_to_print, "actual:   %d | %d | %d", deaths, game_start_timestamp, saved_clock);
-      Serial.println(s_to_print);
+    char s_to_print[200];
+    Serial.println(s2str(start_state));
+    sprintf(s_to_print, "Test from %s to %s FAILED", s2str(start_state), s2str(end_state));
+    Serial.println(s_to_print);
+    sprintf(s_to_print, "End state expected: %s | actual: %s", s2str(end_state), s2str(result_state));
+    Serial.println(s_to_print);
+    sprintf(s_to_print, "Inputs: mils %ld | trigger_pressed %d | sensor_value %d | received_packet %s", test_state_inputs.mils, test_state_inputs.trigger_pressed, test_state_inputs.sensor_value, p2str(test_state_inputs.received_packet));
+    Serial.println(s_to_print);
+    sprintf(s_to_print, "    %s | %s | %s", "deaths", "game_start_timestep", "saved_clock");
+    Serial.println(s_to_print);
+    sprintf(s_to_print, "expected: %d | %d | %d", end_state_vars.deaths, end_state_vars.game_start_timestamp, end_state_vars.saved_clock);
+    Serial.println(s_to_print);
+    sprintf(s_to_print, "actual:   %d | %d | %d", deaths, game_start_timestamp, saved_clock);
+    Serial.println(s_to_print);
     return false;
   }
   return verbos;
 }
 
-const state test_states_in[17] = {(state) 1, (state) 1, (state) 2, (state) 2, (state) 2, (state) 2, (state) 3, (state) 3, (state) 3, (state) 3, (state) 4, (state) 4, (state) 4, (state) 6, (state) 6, (state) 6, (state) 6};
-const state test_states_out[17] = {(state) 1, (state) 2, (state) 2, (state) 3, (state) 4, (state) 5, (state) 3, (state) 4, (state) 5, (state) 6, (state) 4, (state) 2, (state) 5, (state) 6, (state) 2, (state) 4, (state) 5};
-const state_inputs test_input[17] = {{0,0,0,(server_packet)GAME_IDLE}, {4000,0,0,(server_packet)GAME_START}, {9000,0,400,(server_packet)0}, {5000,1,400,(server_packet)0}, {60000,0,600,(server_packet)0}, {400000,0,0,(server_packet)0}, {60000,0,400,(server_packet)0}, {60000,0,600,(server_packet)0}, {300201,0,0,(server_packet)0}, {60000,0,400,(server_packet)0}, {60000,0,0,(server_packet)0}, {60000,0,0,(server_packet)0}, {503000,0,0,(server_packet)0}, {60000,0,400,(server_packet)0}, {60000,0,400,(server_packet)0}, {60000,0,600,(server_packet)0}, {310000,0,0,(server_packet)0}};
-const state_vars test_in_vars[17] = {{0,0,0}, {0,0,0}, {0,287000,0}, {0,2000,2000}, {0,50000,0}, {0,3000,0}, {0,50000,59950}, {0,50000,0}, {0,200,0}, {0,50000,100}, {0,50000,55000}, {0,50000,50000}, {0,203000,0}, {0,50000,59800}, {0,50000,59600}, {1,50000,40000}, {0,10000,0}};
-const state_vars test_out_vars[17] = {{0,0,0}, {0,4000,0}, {0,287000,0}, {0,2000,5000}, {1,50000,60000}, {0,3000,0}, {0,50000,59950}, {1,50000,60000}, {0,200,0}, {0,50000,60000}, {0,50000,55000}, {0,50000,50000}, {0,203000,0}, {0,50000,59800}, {0,50000,59600}, {2,50000,60000}, {0,10000,0}};
+const state test_states_in[17] = {(state)1, (state)1, (state)2, (state)2, (state)2, (state)2, (state)3, (state)3, (state)3, (state)3, (state)4, (state)4, (state)4, (state)6, (state)6, (state)6, (state)6};
+const state test_states_out[17] = {(state)1, (state)2, (state)2, (state)3, (state)4, (state)5, (state)3, (state)4, (state)5, (state)6, (state)4, (state)2, (state)5, (state)6, (state)2, (state)4, (state)5};
+const state_inputs test_input[17] = {{0, 0, 0, (server_packet)GAME_IDLE}, {4000, 0, 0, (server_packet)GAME_START}, {9000, 0, 400, (server_packet)0}, {5000, 1, 400, (server_packet)0}, {60000, 0, 600, (server_packet)0}, {400000, 0, 0, (server_packet)0}, {60000, 0, 400, (server_packet)0}, {60000, 0, 600, (server_packet)0}, {300201, 0, 0, (server_packet)0}, {60000, 0, 400, (server_packet)0}, {60000, 0, 0, (server_packet)0}, {60000, 0, 0, (server_packet)0}, {503000, 0, 0, (server_packet)0}, {60000, 0, 400, (server_packet)0}, {60000, 0, 400, (server_packet)0}, {60000, 0, 600, (server_packet)0}, {310000, 0, 0, (server_packet)0}};
+const state_vars test_in_vars[17] = {{0, 0, 0}, {0, 0, 0}, {0, 287000, 0}, {0, 2000, 2000}, {0, 50000, 0}, {0, 3000, 0}, {0, 50000, 59950}, {0, 50000, 0}, {0, 200, 0}, {0, 50000, 100}, {0, 50000, 55000}, {0, 50000, 50000}, {0, 203000, 0}, {0, 50000, 59800}, {0, 50000, 59600}, {1, 50000, 40000}, {0, 10000, 0}};
+const state_vars test_out_vars[17] = {{0, 0, 0}, {0, 4000, 0}, {0, 287000, 0}, {0, 2000, 5000}, {1, 50000, 60000}, {0, 3000, 0}, {0, 50000, 59950}, {1, 50000, 60000}, {0, 200, 0}, {0, 50000, 60000}, {0, 50000, 55000}, {0, 50000, 50000}, {0, 203000, 0}, {0, 50000, 59800}, {0, 50000, 59600}, {2, 50000, 60000}, {0, 10000, 0}};
 const int num_tests = 17;
 
 /*

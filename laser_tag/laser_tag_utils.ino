@@ -1,13 +1,13 @@
-//#include <Arduino.h>
+#include <Arduino.h>
 
-//#include "laser_tag.h"
+#include "laser_tag.h"
+
 // PIN ASSIGNMENTS
-
-int LASER = 3;
-int TRIGGER = 5;
-int LIGHT_SENSOR = A1;
-int VEST_LIGHTS = 7;
-int PIEZO = 4;
+static int LASER = 3;
+static int TRIGGER = 5;
+static int LIGHT_SENSOR = A1;
+static int VEST_LIGHTS = 7;
+static int PIEZO = 4;
 
 /*
  * Initialize system: set random, initialize arrow characters, set up LCD
@@ -57,8 +57,8 @@ void set_vest_lights(light_status level) {
 
 #ifdef TESTING
 
-//Don't actually turn the laser on for testing so we don't accidentally blind anyone
-//We just assume that the hit worked
+// Don't actually turn the laser on for testing so we don't accidentally blind anyone
+// We just assume that the hit worked
 void set_laser(int level) {
   if (level == ON) {
     Serial.println("Laser on");
@@ -68,11 +68,11 @@ void set_laser(int level) {
   }
 }
 
-//Don't actually play any sounds
+// Don't actually play any sounds
 void make_sound(game_sound sound) {
 }
 
-//Don't try to connect to actual webpage, this is for later integration testing
+// Don't try to connect to actual webpage, this is for later integration testing
 void report_hit() {
   Serial.println("Sending hit");
 }
