@@ -23,12 +23,7 @@ enum State {
 
 let state: State = State.GameOver;
 let registeredPlayers: Players = {};
-
-const openRegistration = () => {
-  state = State.Registration;
-  registeredPlayers = {};
-  syncRegisteredPlayers();
-};
+let startTime: Moment = moment();
 
 const syncRegisteredPlayers = () =>
   writeFileSync(currentGameFile, JSON.stringify(registeredPlayers));
@@ -43,15 +38,26 @@ router.get("/setState", (req, res) => {
 
   let returnStatus = 200;
   if (status === State.Registration) {
-    openRegistration();
+    state = State.Registration;
+    registeredPlayers = {};
+    syncRegisteredPlayers();
   } else if (status === State.Start) {
     state = State.Start;
+    startTime = moment().add(10, "seconds");
   } else if (status === State.GameOver) {
     state = State.GameOver;
   } else {
     returnStatus = 400;
   }
   res.sendStatus(returnStatus);
+});
+
+router.get("/start", (_, res) => {
+  if (state === State.Registration) {
+    res.json(-1);
+  } else if (state === State.Start) {
+    res.json(startTime.unix());
+  }
 });
 
 router.get("/register", (req, res) => {

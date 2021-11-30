@@ -15,7 +15,7 @@ export const GameController = () => {
     Start = "start",
   }
 
-  const [state, setState] = useState(State.Start);
+  const [state, setState] = useState(State.Registration);
 
   return (
     <Card>
