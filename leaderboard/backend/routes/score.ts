@@ -81,22 +81,27 @@ router.get("/hit", (req, res) => {
    * For now, this router will receive data in the format
    * "id={ID}" to indicate that the player of the specified ID was hit.
    */
-  const id = req.ip;
-  const [taggerId, _] = Object.entries(registeredPlayers).find(
-    ([playerId, _]) => id !== playerId
-  ) ?? [undefined, undefined];
 
-  if (taggerId === undefined) {
-    res.json("cannot determine a taggerId");
+  if (state === State.Start) {
+    const id = req.ip;
+    const [taggerId, _] = Object.entries(registeredPlayers).find(
+      ([playerId, _]) => id !== playerId
+    ) ?? [undefined, undefined];
+
+    if (taggerId === undefined) {
+      res.json("cannot determine a taggerId");
+    } else {
+      const { taggedBy } = registeredPlayers[id] ?? { taggedBy: [] };
+      const newPlayerData: Player = { taggedBy: [...taggedBy, taggerId] };
+
+      registeredPlayers = { ...registeredPlayers, [id]: newPlayerData };
+
+      res.sendStatus(200);
+
+      syncRegisteredPlayers();
+    }
   } else {
-    const { taggedBy } = registeredPlayers[id] ?? { taggedBy: [] };
-    const newPlayerData: Player = { taggedBy: [...taggedBy, taggerId] };
-
-    registeredPlayers = { ...registeredPlayers, [id]: newPlayerData };
-
-    res.sendStatus(200);
-
-    syncRegisteredPlayers();
+    res.json("game not started");
   }
 });
 
