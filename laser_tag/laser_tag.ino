@@ -167,6 +167,29 @@ void setup() {
   }
   Serial.println("Registration successfull");
 
+
+  // Watchdog configuration
+  NVIC_DisableIRQ(WDT_IRQn);
+  NVIC_ClearPendingIRQ(WDT_IRQn);
+  NVIC_SetPriority(WDT_IRQn, 0);
+  NVIC_EnableIRQ(WDT_IRQn);
+
+  // Configure and enable WDT GCLK:
+  GCLK->GENDIV.reg = GCLK_GENDIV_DIV(4) | GCLK_GENDIV_ID(5);
+  while (GCLK->STATUS.bit.SYNCBUSY);
+  // set GCLK->GENCTRL.reg and GCLK->CLKCTRL.reg
+  GCLK->GENCTRL.reg = GCLK_GENCTRL_GENEN | GCLK_GENCTRL_SRC_OSCULP32K | GCLK_GENCTRL_ID(5) | GCLK_GENCTRL_DIVSEL;
+  while(GCLK->STATUS.bit.SYNCBUSY); 
+  GCLK->CLKCTRL.reg = GCLK_CLKCTRL_GEN(5) | GCLK_CLKCTRL_CLKEN | GCLK_CLKCTRL_ID_WDT;
+
+  // Configure and enable WDT:
+  // WDT->CONFIG.reg, WDT->EWCTRL.reg, WDT->CTRL.reg
+  
+  WDT->CONFIG.reg = 0x9;
+  WDT->EWCTRL.reg = 0x8;
+  WDT->CTRL.reg = WDT_CTRL_ENABLE;
+  while (WDT->STATUS.bit.SYNCBUSY);
+
 #ifdef TESTING
   test_all_tests();
 #endif
@@ -174,8 +197,11 @@ void setup() {
 
 void loop() {
 #ifndef TESTING
+  WDT->CLEAR.reg = 0xA5;
   update_inputs();
+  WDT->CLEAR.reg = 0xA5;
   CURRENT_STATE = update_fsm(CURRENT_STATE, millis(), trigger_pressed, sensor_value, received_packet);
+  WDT->CLEAR.reg = 0xA5;
 //  Serial.println(CURRENT_STATE);
   delay(500);
 #endif
