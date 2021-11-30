@@ -2,14 +2,15 @@
   "name": "leaderboard-server",
   "version": "0.0.1pre",
   "description": "Server for the leaderboard.",
-  "main": "backend/app.js",
   "scripts": {
-    "start": "tsc && nodemon --exec babel-node build/app.js",
+    "start": "nodemon backend/app.ts --ignore '*.json'",
     "tunnel": "ngrok http -subdomain=cs1600-lasertag 8888"
   },
   "dependencies": {
     "cors": "^2.8.5",
-    "express": "^4.17.1"
+    "express": "^4.17.1",
+    "moment": "^2.29.1",
+    "ts-node": "^10.4.0"
   },
   "devDependencies": {
     "@babel/core": "^7.16.0",

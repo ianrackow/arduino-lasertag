@@ -1,6 +1,6 @@
-import { createHash } from "crypto";
 import express from "express";
-import { copyFileSync, existsSync, readFileSync, writeFileSync } from "fs";
+import { writeFileSync } from "fs";
+import moment, { Moment } from "moment";
 import path from "path";
 
 type Player = { taggedBy: string[] };
@@ -13,29 +13,61 @@ router.get("/", (_, res) => {
 });
 
 const currentGameFile = path.posix.join("data", "current-game.json");
-const pastGamesDir = path.posix.join("data", "past-games");
 
-router.get("/start", (_, res) => {
-  // if there is a current game, rename it to the hash of the file cuz I don't know how else to generate a unique filename
-  if (existsSync(currentGameFile)) {
-    const data = readFileSync(currentGameFile);
+// variable for players who have called start
+enum State {
+  Registration = "registration",
+  Start = "start",
+  GameOver = "gameOver",
+}
 
-    // if there is data, copy it to past games just for funsies
-    if (data) {
-      const hashSum = createHash("sha256");
-      hashSum.update(data);
+let state: State = State.GameOver;
+let registeredPlayers: Players = {};
 
-      const currentGameHash = hashSum.digest("hex");
+const openRegistration = () => {
+  state = State.Registration;
+  registeredPlayers = {};
+  syncRegisteredPlayers();
+};
 
-      copyFileSync(currentGameFile, path.join(pastGamesDir, currentGameHash));
-    }
+const syncRegisteredPlayers = () =>
+  writeFileSync(currentGameFile, JSON.stringify(registeredPlayers));
+
+const addRegisteredPlayer = (playerId: string) =>
+  (registeredPlayers[playerId] = { taggedBy: [] });
+
+router.get("/setState", (req, res) => {
+  const status = req.query.state as string;
+
+  console.log("setState", status);
+
+  let returnStatus = 200;
+  if (status === State.Registration) {
+    openRegistration();
+  } else if (status === State.Start) {
+    state = State.Start;
+  } else if (status === State.GameOver) {
+    state = State.GameOver;
   } else {
-    console.log("lmao current game no exist stupid");
+    returnStatus = 400;
   }
+  res.sendStatus(returnStatus);
+});
 
-  writeFileSync(currentGameFile, JSON.stringify({}));
+router.get("/register", (req, res) => {
+  console.log(state);
+  if (state === State.Registration) {
+    const playerId = (req.query.id as string | undefined) ?? req.ip;
 
-  res.sendStatus(200);
+    console.log("adding player", playerId);
+    addRegisteredPlayer(playerId);
+
+    res.sendStatus(200);
+
+    syncRegisteredPlayers();
+  } else {
+    res.sendStatus(400);
+  }
 });
 
 router.get("/hit", (req, res) => {
@@ -43,25 +75,22 @@ router.get("/hit", (req, res) => {
    * For now, this router will receive data in the format
    * "id={ID}" to indicate that the player of the specified ID was hit.
    */
-  console.log(req.query);
-  console.log(req.query.id);
-  const id = req.query.id as string | undefined;
-  const taggerId = req.query.taggerId as string | undefined;
+  const id = req.ip;
+  const [taggerId, _] = Object.entries(registeredPlayers).find(
+    ([playerId, _]) => id !== playerId
+  ) ?? [undefined, undefined];
 
-  if (typeof id === "string" && typeof taggerId === "string") {
-    // current-game.json could be empty, so return an empty array if true
-    const data = (require("../../data/current-game.json") || {}) as Players;
-
-    const { taggedBy } = data[id] ?? { taggedBy: [] };
+  if (taggerId === undefined) {
+    res.sendStatus(400);
+  } else {
+    const { taggedBy } = registeredPlayers[id] ?? { taggedBy: [] };
     const newPlayerData: Player = { taggedBy: [...taggedBy, taggerId] };
 
-    const newData: Players = { ...data, [id]: newPlayerData };
-
-    writeFileSync("data/current-game.json", JSON.stringify(newData));
+    registeredPlayers = { ...registeredPlayers, [id]: newPlayerData };
 
     res.sendStatus(200);
-  } else {
-    res.sendStatus(400);
+
+    syncRegisteredPlayers();
   }
 });
 
