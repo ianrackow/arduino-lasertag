@@ -151,7 +151,7 @@ void setup() {
   setup_wifi();
   initialize_system();
 
-  //  calibrate();
+  calibrate();
 
   //   test_calibration();
 

@@ -22,9 +22,24 @@ void initialize_system() {
 
 /*
  * Display "CALIBRATING" as a scroll on the LCD
- * Display capacitive sensor readings from pins 7-10 in serial monitor
  */
 void calibrate() {
+
+  int max_read = 0;
+  Serial.println("Calibrating to current light");
+  for (int i = 0; i < 15; i++){
+
+    int sensor_value = analogRead(LIGHT_SENSOR);
+    Serial.println(sensor_value);
+    if (sensor_value > max_read){
+      max_read = sensor_value;
+    }
+    delay(200);
+  }
+  vest_threshold = max_read + 20;
+  Serial.print("Done calibrating, threshold: ");
+  Serial.println(vest_threshold);
+  
 }
 
 /*
