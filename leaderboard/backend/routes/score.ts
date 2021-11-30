@@ -36,7 +36,7 @@ router.get("/setState", (req, res) => {
 
   console.log("setState", status);
 
-  let returnStatus = 200;
+  let returnStatus: string | number = 200;
   if (status === State.Registration) {
     state = State.Registration;
     registeredPlayers = {};
@@ -47,9 +47,9 @@ router.get("/setState", (req, res) => {
   } else if (status === State.GameOver) {
     state = State.GameOver;
   } else {
-    returnStatus = 400;
+    returnStatus = "bad state";
   }
-  res.sendStatus(returnStatus);
+  res.json(returnStatus);
 });
 
 router.get("/start", (_, res) => {
@@ -72,7 +72,7 @@ router.get("/register", (req, res) => {
 
     syncRegisteredPlayers();
   } else {
-    res.sendStatus(400);
+    res.json("registration not enabled");
   }
 });
 
@@ -87,7 +87,7 @@ router.get("/hit", (req, res) => {
   ) ?? [undefined, undefined];
 
   if (taggerId === undefined) {
-    res.sendStatus(400);
+    res.json("cannot determine a taggerId");
   } else {
     const { taggedBy } = registeredPlayers[id] ?? { taggedBy: [] };
     const newPlayerData: Player = { taggedBy: [...taggedBy, taggerId] };
