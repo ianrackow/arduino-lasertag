@@ -1,7 +1,8 @@
 #pragma once
 
 typedef enum {
-  sWAITING_FOR_GAME = 1,
+  sGAME_NOT_STARTED = 0,
+  sCOUNTDOWN_TILL_START = 1,
   sNEUTRAL = 2,
   sJUST_FIRED = 3,
   sHIT = 4,
@@ -11,6 +12,7 @@ typedef enum {
 
 typedef enum {
   INVALID_PACKET = 0,
+  GAME_START_NOT_SET = -1,
   GAME_IDLE = 1,
   GAME_START = 2,
 } server_packet;

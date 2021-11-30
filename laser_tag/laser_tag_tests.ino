@@ -2,6 +2,7 @@
 
 #include "laser_tag.h"
 
+#ifdef TESTING
 /*
  * Helper function for printing states
  */
@@ -110,3 +111,5 @@ bool test_all_tests() {
   Serial.println("All tests passed!");
   return true;
 }
+
+#endif

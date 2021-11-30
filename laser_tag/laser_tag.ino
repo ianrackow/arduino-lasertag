@@ -5,13 +5,14 @@
 #include "laser_tag_tests.h"
 #include "laser_tag_utils.h"
 
-#define TESTING
+//#define TESTING
 
 // Global game variables
 int shot_delay = 400;
 int shot_duration = 100;
 int cooldown_period = 10000;
 int game_duration = 300000;
+int poll_game_start_interval = 2000;
 int vest_threshold = 500;  // We need to calibrate this
 
 // FSM variables
@@ -28,6 +29,7 @@ int sensor_value;
 state CURRENT_STATE;
 
 // ########### WIFI CODE ############
+//#include <HttpClient.h>
 #include <NTPClient.h>
 #include <SPI.h>
 #include <WiFi101.h>
@@ -36,13 +38,15 @@ state CURRENT_STATE;
 WiFiUDP ntpUDP;
 
 WiFiClient client;
+//HttpClient http(client);
 NTPClient timeClient(ntpUDP);
 
 byte mac[6];
 char player_id[18];
 
-// char server_url[] = "67b8-192-91-235-243.ngrok.io";  // URL for our server
-char server_url[] = "http://104.131.46.88/";  // URL for our server
+ char server_url[] = "http://3c93-72-215-51-93.ngrok.io";  // URL for our server
+ char host_name[] = "3c93-72-215-51-93.ngrok.io";
+//char server_url[] = "http://104.131.46.88/";  // URL for our server
 // char ssid[] = "Brown-Guest";                  // network SSID (name)
 // char pass[] = "";                             // for networks that require a password
 char ssid[] = "29 CREIGHTON - 1";
@@ -68,7 +72,7 @@ bool connect_to_webpage() {
   if (client.connect(server_url, 80)) {
     Serial.println("player_id: " + String(player_id));
     client.println("GET /api/score/hit?id=" + String(player_id) + " HTTP/1.0");
-    client.println("Host: " + String(server_url));
+    client.println("Host: " + String(host_name));
     client.println();
     return true;
   } else {
@@ -76,6 +80,67 @@ bool connect_to_webpage() {
     return false;
   }
 }
+
+bool register_for_game(){
+//    http.get(server_url, "/api/score/register");
+  if (client.connect(server_url, 80)) {
+    String response = "";
+    Serial.println("player_id: " + String(player_id));
+    client.println("GET /api/score/register HTTP/1.0");
+    client.println("Host: " + String(host_name));
+    client.println();
+
+     while(client.connected()) {
+      if(client.available()){
+        // read an incoming byte from the server and print it to serial monitor:
+        char c = client.read();
+        response += c;
+      }
+    }
+
+    // the server's disconnected, stop the client:
+    client.stop();
+
+    response = response.substring(response.length()-2);
+
+    return response.equals("OK");
+    
+  } else {
+    Serial.println("Failed to fetch webpage");
+    return false;
+  }
+}
+
+int get_start_time(){
+  String response = "";
+  if (client.connect(server_url, 80)) {
+    // Serial.println("player_id: " + String(player_id));
+    client.println("GET /api/score/start HTTP/1.0");
+    client.println("Host: " + String(host_name));
+    client.println();
+
+    while(client.connected()) {
+      if(client.available()){
+        // read an incoming byte from the server and print it to serial monitor:
+        char c = client.read();
+        response += c;
+        if (c == '\n'){
+          response = "";
+        }
+      }
+    }
+
+    // the server's disconnected, stop the client:
+    client.stop();
+
+    Serial.println(response);
+    return response.toInt();
+  } else {
+    Serial.println("Failed to fetch webpage");
+    return -1;
+  }
+}
+
 // ##################################
 
 void setup() {
@@ -90,10 +155,17 @@ void setup() {
 
   //   test_calibration();
 
-  CURRENT_STATE = sNEUTRAL;
+  CURRENT_STATE = sGAME_NOT_STARTED;
   set_vest_lights(ON);
   saved_clock = millis();
   game_start_timestamp = saved_clock;
+
+  Serial.println("Trying to register for game!");
+  while (!register_for_game()){
+    Serial.println("Trying again");
+    delay(1000);
+  }
+  Serial.println("Registration successfull");
 
 #ifdef TESTING
   test_all_tests();
@@ -104,7 +176,7 @@ void loop() {
 #ifndef TESTING
   update_inputs();
   CURRENT_STATE = update_fsm(CURRENT_STATE, millis(), trigger_pressed, sensor_value, received_packet);
-  Serial.println(CURRENT_STATE);
+//  Serial.println(CURRENT_STATE);
   delay(500);
 #endif
 }
@@ -112,16 +184,38 @@ void loop() {
 state update_fsm(state cur_state, long mils, int trigger_pressed, int sensor_value, server_packet received_packet) {
   state next_state = cur_state;
   switch (cur_state) {
-    case sWAITING_FOR_GAME:
-      if (received_packet == GAME_START) {  // Transition from 1-2
-        make_sound(GAME_STARTING);
-        set_vest_lights(ON);
-        game_start_timestamp = mils;
-        next_state = sNEUTRAL;
+    case sGAME_NOT_STARTED:
+      if ((mils-saved_clock) > poll_game_start_interval){ 
+        game_start_timestamp = get_start_time();
+        Serial.println(game_start_timestamp);
+        if (game_start_timestamp != GAME_START_NOT_SET){  //Transition from 0-1
+          Serial.println("Server gave us a start timestamp! :");
+          Serial.println(game_start_timestamp);
+          next_state = sCOUNTDOWN_TILL_START;
+        }else{
+          saved_clock = mils;  
+        }
       } else {
-        next_state = sWAITING_FOR_GAME;
+        next_state = sGAME_NOT_STARTED; //Transition from 0-0
       }
       break;
+    case sCOUNTDOWN_TILL_START:
+    {
+        timeClient.update();
+        int ntp_epoch = timeClient.getEpochTime();
+        Serial.println(ntp_epoch);
+        if (ntp_epoch >= game_start_timestamp) {  // Transition from 1-2
+          Serial.println("Game started!");
+          make_sound(GAME_STARTING);
+          set_vest_lights(ON);
+          game_start_timestamp = mils;
+          next_state = sNEUTRAL;
+        }else{                                    //Transition from 1-1
+          next_state = sCOUNTDOWN_TILL_START;
+        }
+        
+       break;
+    }
     case sNEUTRAL:
       if ((mils - game_start_timestamp) >= game_duration) {  // Transition 2-5
         make_sound(GAME_OVER);

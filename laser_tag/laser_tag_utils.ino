@@ -40,17 +40,17 @@ void test_calibration() {
  */
 void update_inputs() {
   trigger_pressed = digitalRead(TRIGGER);
-  Serial.println(trigger_pressed);
+//  Serial.println(trigger_pressed);
   sensor_value = analogRead(LIGHT_SENSOR);
-  Serial.println(sensor_value);
+//  Serial.println(sensor_value);
 }
 
 void set_vest_lights(light_status level) {
   if (level == ON) {
-    Serial.println("Vest on");
+//    Serial.println("Vest on");
     digitalWrite(VEST_LIGHTS, HIGH);
   } else {
-    Serial.println("Vest off");
+//    Serial.println("Vest off");
     digitalWrite(VEST_LIGHTS, LOW);
   }
 }
