@@ -1,3 +1,4 @@
 # Server:
 **/node_modules/
 build*
+leaderboard/data/current-game.json
