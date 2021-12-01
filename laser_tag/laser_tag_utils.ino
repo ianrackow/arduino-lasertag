@@ -10,6 +10,7 @@ static int TRIGGER = 5;
 static int LIGHT_SENSOR = A1;
 static int VEST_LIGHTS = 7;
 static int PIEZO = 4;
+static int CALIBRATE_BUTTON = 6;
 
 /*
  * Initialize system: set random, initialize arrow characters, set up LCD
@@ -20,12 +21,18 @@ void initialize_system() {
   pinMode(PIEZO, OUTPUT);
   pinMode(LIGHT_SENSOR, INPUT);
   pinMode(TRIGGER, INPUT);
+  pinMode(CALIBRATE_BUTTON, INPUT);
+
+  attachInterrupt(CALIBRATE_BUTTON, calibrate, RISING);
 }
 
 /*
  * Display "CALIBRATING" as a scroll on the LCD
  */
 void calibrate() {
+  if (CURRENT_STATE != sGAME_NOT_STARTED) {
+    return;
+  }
   int max_read = 0;
   Serial.println("Calibrating to current light");
   for (int i = 0; i < 15; i++) {
