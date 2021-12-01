@@ -43,7 +43,7 @@ router.get("/setState", (req, res) => {
 
   console.log("setState", status);
 
-  let returnStatus: string | number = 200;
+  let returnStatus: number = 200;
   if (status === State.Registration) {
     state = State.Registration;
     registeredPlayers = {};
@@ -56,9 +56,9 @@ router.get("/setState", (req, res) => {
     state = State.GameOver;
     syncData();
   } else {
-    returnStatus = "bad state";
+    returnStatus = 400;
   }
-  res.json(returnStatus);
+  res.sendStatus(returnStatus);
 });
 
 router.get("/start", (_, res) => {
