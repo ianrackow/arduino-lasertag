@@ -7,45 +7,117 @@ import {
   Typography,
 } from "@mui/material";
 import { startCase } from "lodash";
-import { useState } from "react";
+import { Moment } from "moment";
+import React, { useState } from "react";
+import Countdown from "react-countdown";
+import { State } from "./Leaderboard";
 
-export const GameController = () => {
-  enum State {
-    Registration = "registration",
-    Start = "start",
-  }
+export const GameController = ({
+  state,
+  startTime,
+}: {
+  state: State;
+  startTime: Moment;
+}) => {
+  const [buttonClicked, setButtonClicked] = useState(false);
 
-  const [state, setState] = useState(State.Start);
+  const switchState = (s: State) => {
+    setButtonClicked(true);
+    fetch(
+      "http://localhost:8888/api/score/setState?" +
+        new URLSearchParams({ state: s })
+    )
+      .catch((err) => console.log(err))
+      .finally(() => {
+        setButtonClicked(false);
+      });
+  };
 
   return (
     <Card>
       <CardContent>
-        <Grid container direction="column" alignItems="center">
-          <Grid item>
-            <Typography variant="h5" gutterBottom>
+        <Grid container direction="column" minWidth={300}>
+          <Grid item textAlign="center">
+            <Typography variant="h4" gutterBottom>
               Control Panel
             </Typography>
           </Grid>
-          <Grid item>{startCase(state)}</Grid>
+
+          <Grid item>
+            <Typography variant="overline">
+              Current State: {startCase(state)}
+            </Typography>
+          </Grid>
+
+          {state === State.Registration && (
+            <Grid item>
+              <Typography variant="caption">
+                Accepting all registration requests
+              </Typography>
+            </Grid>
+          )}
+          {state === State.Start && (
+            <Grid item>
+              <Typography variant="caption">
+                <Countdown
+                  date={startTime.toDate()}
+                  renderer={({ seconds, completed }) => {
+                    if (completed) {
+                      // Render a completed state
+                      return "Game On!";
+                    } else {
+                      // Render a countdown
+                      return `Game starting in... ${seconds}`;
+                    }
+                  }}
+                />
+                {/* {startTime && startTime.diff(moment(), "seconds") > 0 ? (
+                  <>Game beginning in {startTime.diff(moment(), "seconds")}</>
+                ) : (
+                  <>Game On!</>
+                )} */}
+              </Typography>
+            </Grid>
+          )}
         </Grid>
       </CardContent>
       <CardActions>
-        {Object.values(State).map((v) => (
+        {/* {Object.values(State).map((v) => (
           <Button
-            disabled={state === v}
+            disabled={buttonClicked === true}
             key={v}
             onClick={() => {
-              fetch(
-                "http://localhost:8888/api/score/setState?" +
-                  new URLSearchParams({ state: v })
-              )
-                .then(() => setState(v))
-                .catch((err) => console.log(err));
+              
+              
             }}
           >
             {startCase(v)}
           </Button>
-        ))}
+        ))} */}
+        {state !== State.Registration && (
+          <Button
+            disabled={buttonClicked}
+            onClick={() => switchState(State.Registration)}
+          >
+            Open Registration
+          </Button>
+        )}
+        {state === State.Registration && (
+          <Button
+            disabled={buttonClicked}
+            onClick={() => switchState(State.Start)}
+          >
+            Start Game
+          </Button>
+        )}
+        {state === State.Start && (
+          <Button
+            disabled={buttonClicked}
+            onClick={() => switchState(State.GameOver)}
+          >
+            End Game
+          </Button>
+        )}
       </CardActions>
     </Card>
   );

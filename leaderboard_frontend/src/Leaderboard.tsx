@@ -11,6 +11,7 @@ import {
   Typography,
 } from "@mui/material";
 import { orderBy, startCase, countBy } from "lodash-es";
+import moment from "moment";
 import currentGameData from "./data/current-game.json";
 import { GameController } from "./GameController";
 
@@ -55,9 +56,23 @@ const tableColumns: {
   points: true,
 };
 
+export enum State {
+  Registration = "registration",
+  Start = "start",
+  GameOver = "gameOver",
+}
+
 export const LeaderboardPage = (props: GridProps) => {
   // cast to players to unknown first cuz weird typescript stuff
-  const playerData = currentGameData as unknown as Players;
+  const {
+    players: playerData,
+    state,
+    startTime,
+  } = currentGameData as unknown as {
+    players: Players;
+    state: State;
+    startTime: Date;
+  };
 
   let playerIdToNumberMap: Record<string, string> = {};
 
@@ -137,7 +152,7 @@ export const LeaderboardPage = (props: GridProps) => {
   return (
     <Grid container justifyContent="center" {...props} spacing={6}>
       <Grid item>
-        <GameController />
+        <GameController state={state} startTime={moment(startTime)} />
       </Grid>
       <Grid item xs={12}>
         <Leaderboard columns={columns} />

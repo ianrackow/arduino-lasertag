@@ -25,8 +25,15 @@ let state: State = State.GameOver;
 let registeredPlayers: Players = {};
 let startTime: Moment = moment();
 
-const syncRegisteredPlayers = () =>
-  writeFileSync(currentGameFile, JSON.stringify(registeredPlayers));
+const syncData = () =>
+  writeFileSync(
+    currentGameFile,
+    JSON.stringify({
+      players: registeredPlayers,
+      state: state,
+      startTime: startTime,
+    })
+  );
 
 const addRegisteredPlayer = (playerId: string) =>
   (registeredPlayers[playerId] = { taggedBy: [] });
@@ -40,12 +47,14 @@ router.get("/setState", (req, res) => {
   if (status === State.Registration) {
     state = State.Registration;
     registeredPlayers = {};
-    syncRegisteredPlayers();
+    syncData();
   } else if (status === State.Start) {
     state = State.Start;
     startTime = moment().add(10, "seconds");
+    syncData();
   } else if (status === State.GameOver) {
     state = State.GameOver;
+    syncData();
   } else {
     returnStatus = "bad state";
   }
@@ -70,7 +79,7 @@ router.get("/register", (req, res) => {
 
     res.sendStatus(200);
 
-    syncRegisteredPlayers();
+    syncData();
   } else {
     res.json("registration not enabled");
   }
@@ -98,7 +107,7 @@ router.get("/hit", (req, res) => {
 
       res.sendStatus(200);
 
-      syncRegisteredPlayers();
+      syncData();
     }
   } else {
     res.json("game not started");
