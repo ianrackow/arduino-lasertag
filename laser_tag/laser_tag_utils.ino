@@ -1,3 +1,5 @@
+#include "laser_tag_utils.h"
+
 #include <Arduino.h>
 
 #include "laser_tag.h"
