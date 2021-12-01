@@ -1,4 +1,5 @@
 import {
+  Alert,
   Button,
   Card,
   CardActions,
@@ -20,14 +21,16 @@ export const GameController = ({
   startTime: Moment;
 }) => {
   const [buttonClicked, setButtonClicked] = useState(false);
+  const [error, setError] = useState(false);
 
   const switchState = (s: State) => {
+    setError(false);
     setButtonClicked(true);
     fetch(
       "http://localhost:8888/api/score/setState?" +
         new URLSearchParams({ state: s })
     )
-      .catch((err) => console.log(err))
+      .catch(() => setError(true))
       .finally(() => {
         setButtonClicked(false);
       });
@@ -78,6 +81,9 @@ export const GameController = ({
                 )} */}
               </Typography>
             </Grid>
+          )}
+          {error && (
+            <Alert severity="error">Error - Unable to change game state</Alert>
           )}
         </Grid>
       </CardContent>
