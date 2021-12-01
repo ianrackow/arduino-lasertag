@@ -24,17 +24,14 @@ export const GameController = ({
   const [error, setError] = useState(false);
 
   const switchState = (s: State) => {
-    setError(false);
     setButtonClicked(true);
     fetch(
       "http://localhost:8888/api/score/setState?" +
         new URLSearchParams({ state: s }),
       { mode: "no-cors" }
     )
-      .catch((err) => {
-        console.log("error", err);
-        setError(true);
-      })
+      .then(() => setError(false))
+      .catch((err) => setError(true))
       .finally(() => {
         setButtonClicked(false);
       });
