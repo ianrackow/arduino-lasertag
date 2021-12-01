@@ -26,14 +26,12 @@ void initialize_system() {
  * Display "CALIBRATING" as a scroll on the LCD
  */
 void calibrate() {
-
   int max_read = 0;
   Serial.println("Calibrating to current light");
-  for (int i = 0; i < 15; i++){
-
+  for (int i = 0; i < 15; i++) {
     int sensor_value = analogRead(LIGHT_SENSOR);
     Serial.println(sensor_value);
-    if (sensor_value > max_read){
+    if (sensor_value > max_read) {
       max_read = sensor_value;
     }
     delay(200);
@@ -41,7 +39,6 @@ void calibrate() {
   vest_threshold = max_read + 20;
   Serial.print("Done calibrating, threshold: ");
   Serial.println(vest_threshold);
-  
 }
 
 /*
@@ -57,17 +54,17 @@ void test_calibration() {
  */
 void update_inputs() {
   trigger_pressed = digitalRead(TRIGGER);
-//  Serial.println(trigger_pressed);
+  // Serial.println(trigger_pressed);
   sensor_value = analogRead(LIGHT_SENSOR);
-//  Serial.println(sensor_value);
+  // Serial.println(sensor_value);
 }
 
 void set_vest_lights(light_status level) {
   if (level == ON) {
-//    Serial.println("Vest on");
+    // Serial.println("Vest on");
     digitalWrite(VEST_LIGHTS, HIGH);
   } else {
-//    Serial.println("Vest off");
+    // Serial.println("Vest off");
     digitalWrite(VEST_LIGHTS, LOW);
   }
 }
