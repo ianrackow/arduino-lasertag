@@ -38,19 +38,19 @@ state CURRENT_STATE;
 WiFiUDP ntpUDP;
 
 WiFiClient client;
-//HttpClient http(client);
+// HttpClient http(client);
 NTPClient timeClient(ntpUDP);
 
 byte mac[6];
 char player_id[18];
 
- char server_url[] = "http://00cd-138-16-127-6.ngrok.io";  // URL for our server
- char host_name[] = "00cd-138-16-127-6.ngrok.io";
-//char server_url[] = "http://104.131.46.88/";  // URL for our server
-char ssid[] = "Brown-Guest";                  // network SSID (name)
-char pass[] = "";                             // for networks that require a password
-//char ssid[] = "29 CREIGHTON - 1";
-//char pass[] = "R3m0t3L3@rn1ng!";
+char server_url[] = "http://3c93-72-215-51-93.ngrok.io";  // URL for our server
+char host_name[] = "3c93-72-215-51-93.ngrok.io";
+// char server_url[] = "http://104.131.46.88/";  // URL for our server
+// char ssid[] = "Brown-Guest";                  // network SSID (name)
+// char pass[] = "";                             // for networks that require a password
+char ssid[] = "29 CREIGHTON - 1";
+char pass[] = "R3m0t3L3@rn1ng!";
 int status = WL_IDLE_STATUS;  // the WiFi radio's status
 
 void setup_wifi() {
@@ -81,8 +81,8 @@ bool connect_to_webpage() {
   }
 }
 
-bool register_for_game(){
-//    http.get(server_url, "/api/score/register");
+bool register_for_game() {
+  // http.get(server_url, "/api/score/register");
   if (client.connect(server_url, 80)) {
     String response = "";
     Serial.println("player_id: " + String(player_id));
@@ -90,8 +90,8 @@ bool register_for_game(){
     client.println("Host: " + String(host_name));
     client.println();
 
-     while(client.connected()) {
-      if(client.available()){
+    while (client.connected()) {
+      if (client.available()) {
         // read an incoming byte from the server and print it to serial monitor:
         char c = client.read();
         response += c;
@@ -101,17 +101,17 @@ bool register_for_game(){
     // the server's disconnected, stop the client:
     client.stop();
 
-    response = response.substring(response.length()-2);
+    response = response.substring(response.length() - 2);
 
     return response.equals("OK");
-    
+
   } else {
     Serial.println("Failed to fetch webpage");
     return false;
   }
 }
 
-int get_start_time(){
+int get_start_time() {
   String response = "";
   if (client.connect(server_url, 80)) {
     // Serial.println("player_id: " + String(player_id));
@@ -119,12 +119,12 @@ int get_start_time(){
     client.println("Host: " + String(host_name));
     client.println();
 
-    while(client.connected()) {
-      if(client.available()){
+    while (client.connected()) {
+      if (client.available()) {
         // read an incoming byte from the server and print it to serial monitor:
         char c = client.read();
         response += c;
-        if (c == '\n'){
+        if (c == '\n') {
           response = "";
         }
       }
@@ -153,20 +153,28 @@ void setup() {
 
   calibrate();
 
-  //   test_calibration();
+  // test_calibration();
 
   CURRENT_STATE = sNEUTRAL;
   set_vest_lights(ON);
   saved_clock = millis();
   game_start_timestamp = saved_clock;
 
+<<<<<<< HEAD
 //  Serial.println("Trying to register for game!");
 //  while (!register_for_game()){
 //    Serial.println("Trying again");
 //    delay(1000);
 //  }
 //  Serial.println("Registration successfull");
-
+=======
+  Serial.println("Trying to register for game!");
+  while (!register_for_game()) {
+    Serial.println("Trying again");
+    delay(1000);
+  }
+  Serial.println("Registration successfull");
+>>>>>>> 4325f2c3472afe49bb24558afa65d8c0ee891c2e
 
   // Watchdog configuration
   NVIC_DisableIRQ(WDT_IRQn);
@@ -176,19 +184,22 @@ void setup() {
 
   // Configure and enable WDT GCLK:
   GCLK->GENDIV.reg = GCLK_GENDIV_DIV(4) | GCLK_GENDIV_ID(5);
-  while (GCLK->STATUS.bit.SYNCBUSY);
+  while (GCLK->STATUS.bit.SYNCBUSY)
+    ;
   // set GCLK->GENCTRL.reg and GCLK->CLKCTRL.reg
   GCLK->GENCTRL.reg = GCLK_GENCTRL_GENEN | GCLK_GENCTRL_SRC_OSCULP32K | GCLK_GENCTRL_ID(5) | GCLK_GENCTRL_DIVSEL;
-  while(GCLK->STATUS.bit.SYNCBUSY); 
+  while (GCLK->STATUS.bit.SYNCBUSY)
+    ;
   GCLK->CLKCTRL.reg = GCLK_CLKCTRL_GEN(5) | GCLK_CLKCTRL_CLKEN | GCLK_CLKCTRL_ID_WDT;
 
   // Configure and enable WDT:
   // WDT->CONFIG.reg, WDT->EWCTRL.reg, WDT->CTRL.reg
-  
+
   WDT->CONFIG.reg = 0x9;
   WDT->EWCTRL.reg = 0x8;
   WDT->CTRL.reg = WDT_CTRL_ENABLE;
-  while (WDT->STATUS.bit.SYNCBUSY);
+  while (WDT->STATUS.bit.SYNCBUSY)
+    ;
 
 #ifdef TESTING
   test_all_tests();
@@ -202,8 +213,13 @@ void loop() {
   WDT->CLEAR.reg = 0xA5;
   CURRENT_STATE = update_fsm(CURRENT_STATE, millis(), trigger_pressed, sensor_value, received_packet);
   WDT->CLEAR.reg = 0xA5;
+<<<<<<< HEAD
 //  Serial.println(CURRENT_STATE);
   delay(100);
+=======
+  // Serial.println(CURRENT_STATE);
+  delay(500);
+>>>>>>> 4325f2c3472afe49bb24558afa65d8c0ee891c2e
 #endif
 }
 
@@ -212,36 +228,35 @@ state update_fsm(state cur_state, long mils, int trigger_pressed, int sensor_val
   Serial.println(cur_state);
   switch (cur_state) {
     case sGAME_NOT_STARTED:
-      if ((mils-saved_clock) > poll_game_start_interval){ 
+      if ((mils - saved_clock) > poll_game_start_interval) {
         game_start_timestamp = get_start_time();
         Serial.println(game_start_timestamp);
-        if (game_start_timestamp != GAME_START_NOT_SET){  //Transition from 0-1
+        if (game_start_timestamp != GAME_START_NOT_SET) {  // Transition from 0-1
           Serial.println("Server gave us a start timestamp! :");
           Serial.println(game_start_timestamp);
           next_state = sCOUNTDOWN_TILL_START;
-        }else{
-          saved_clock = mils;  
+        } else {
+          saved_clock = mils;
         }
       } else {
-        next_state = sGAME_NOT_STARTED; //Transition from 0-0
+        next_state = sGAME_NOT_STARTED;  // Transition from 0-0
       }
       break;
-    case sCOUNTDOWN_TILL_START:
-    {
-        timeClient.update();
-        int ntp_epoch = timeClient.getEpochTime();
-        Serial.println(ntp_epoch);
-        if (ntp_epoch >= game_start_timestamp) {  // Transition from 1-2
-          Serial.println("Game started!");
-          make_sound(GAME_STARTING);
-          set_vest_lights(ON);
-          game_start_timestamp = mils;
-          next_state = sNEUTRAL;
-        }else{                                    //Transition from 1-1
-          next_state = sCOUNTDOWN_TILL_START;
-        }
-        
-       break;
+    case sCOUNTDOWN_TILL_START: {
+      timeClient.update();
+      int ntp_epoch = timeClient.getEpochTime();
+      Serial.println(ntp_epoch);
+      if (ntp_epoch >= game_start_timestamp) {  // Transition from 1-2
+        Serial.println("Game started!");
+        make_sound(GAME_STARTING);
+        set_vest_lights(ON);
+        game_start_timestamp = mils;
+        next_state = sNEUTRAL;
+      } else {  // Transition from 1-1
+        next_state = sCOUNTDOWN_TILL_START;
+      }
+
+      break;
     }
     case sNEUTRAL:
       if ((mils - game_start_timestamp) >= game_duration) {  // Transition 2-5
