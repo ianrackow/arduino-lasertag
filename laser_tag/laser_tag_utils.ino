@@ -4,7 +4,7 @@
 
 // PIN ASSIGNMENTS
 static int LASER = 3;
-static int TRIGGER = 5;
+static int TRIGGER = 2;
 static int LIGHT_SENSOR = A1;
 static int VEST_LIGHTS = 7;
 static int PIEZO = 4;
@@ -36,7 +36,7 @@ void calibrate() {
     }
     delay(200);
   }
-  vest_threshold = max_read + 20;
+  vest_threshold = max_read + 40;
   Serial.print("Done calibrating, threshold: ");
   Serial.println(vest_threshold);
   
@@ -55,9 +55,11 @@ void test_calibration() {
  */
 void update_inputs() {
   trigger_pressed = digitalRead(TRIGGER);
-//  Serial.println(trigger_pressed);
+  Serial.print("Trigger: ");
+  Serial.println(trigger_pressed);
   sensor_value = analogRead(LIGHT_SENSOR);
-//  Serial.println(sensor_value);
+  Serial.println("sense this");
+  Serial.println(sensor_value);
 }
 
 void set_vest_lights(light_status level) {

@@ -8,8 +8,8 @@
 //#define TESTING
 
 // Global game variables
-int shot_delay = 400;
-int shot_duration = 100;
+int shot_delay = 1000;
+int shot_duration = 3000;
 int cooldown_period = 10000;
 int game_duration = 300000;
 int poll_game_start_interval = 2000;
@@ -44,13 +44,13 @@ NTPClient timeClient(ntpUDP);
 byte mac[6];
 char player_id[18];
 
- char server_url[] = "http://3c93-72-215-51-93.ngrok.io";  // URL for our server
- char host_name[] = "3c93-72-215-51-93.ngrok.io";
+ char server_url[] = "http://00cd-138-16-127-6.ngrok.io";  // URL for our server
+ char host_name[] = "00cd-138-16-127-6.ngrok.io";
 //char server_url[] = "http://104.131.46.88/";  // URL for our server
-// char ssid[] = "Brown-Guest";                  // network SSID (name)
-// char pass[] = "";                             // for networks that require a password
-char ssid[] = "29 CREIGHTON - 1";
-char pass[] = "R3m0t3L3@rn1ng!";
+char ssid[] = "Brown-Guest";                  // network SSID (name)
+char pass[] = "";                             // for networks that require a password
+//char ssid[] = "29 CREIGHTON - 1";
+//char pass[] = "R3m0t3L3@rn1ng!";
 int status = WL_IDLE_STATUS;  // the WiFi radio's status
 
 void setup_wifi() {
@@ -62,7 +62,7 @@ void setup_wifi() {
     Serial.print("Attempting to connect to: ");
     Serial.println(ssid);
     Serial.println(pass);
-    status = WiFi.begin(ssid, pass);  // WiFi.begin(ssid, pass) for password
+    status = WiFi.begin(ssid);  // WiFi.begin(ssid, pass) for password
     Serial.println(WiFi.status());
     delay(10000);
   }
@@ -86,7 +86,7 @@ bool register_for_game(){
   if (client.connect(server_url, 80)) {
     String response = "";
     Serial.println("player_id: " + String(player_id));
-    client.println("GET /api/score/register HTTP/1.0");
+    client.println("GET /api/score/register?id=banana HTTP/1.0");
     client.println("Host: " + String(host_name));
     client.println();
 
@@ -155,17 +155,17 @@ void setup() {
 
   //   test_calibration();
 
-  CURRENT_STATE = sGAME_NOT_STARTED;
+  CURRENT_STATE = sNEUTRAL;
   set_vest_lights(ON);
   saved_clock = millis();
   game_start_timestamp = saved_clock;
 
-  Serial.println("Trying to register for game!");
-  while (!register_for_game()){
-    Serial.println("Trying again");
-    delay(1000);
-  }
-  Serial.println("Registration successfull");
+//  Serial.println("Trying to register for game!");
+//  while (!register_for_game()){
+//    Serial.println("Trying again");
+//    delay(1000);
+//  }
+//  Serial.println("Registration successfull");
 
 
   // Watchdog configuration
@@ -203,12 +203,13 @@ void loop() {
   CURRENT_STATE = update_fsm(CURRENT_STATE, millis(), trigger_pressed, sensor_value, received_packet);
   WDT->CLEAR.reg = 0xA5;
 //  Serial.println(CURRENT_STATE);
-  delay(500);
+  delay(100);
 #endif
 }
 
 state update_fsm(state cur_state, long mils, int trigger_pressed, int sensor_value, server_packet received_packet) {
   state next_state = cur_state;
+  Serial.println(cur_state);
   switch (cur_state) {
     case sGAME_NOT_STARTED:
       if ((mils-saved_clock) > poll_game_start_interval){ 
@@ -257,6 +258,7 @@ state update_fsm(state cur_state, long mils, int trigger_pressed, int sensor_val
         report_hit();
         saved_clock = mils;
         deaths = deaths + 1;
+        make_sound(HIT);
         next_state = sHIT;
       } else {
         next_state = sNEUTRAL;

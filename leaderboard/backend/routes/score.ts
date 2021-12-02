@@ -1,4 +1,4 @@
-import express from "express";
+import express, { Router } from "express";
 import { writeFileSync } from "fs";
 import moment, { Moment } from "moment";
 import path from "path";
@@ -92,7 +92,7 @@ router.get("/hit", (req, res) => {
    */
 
   if (state === State.Start) {
-    const id = req.ip;
+    const id = (req.query.id as string | undefined) ?? req.ip;
     const [taggerId, _] = Object.entries(registeredPlayers).find(
       ([playerId, _]) => id !== playerId
     ) ?? [undefined, undefined];
