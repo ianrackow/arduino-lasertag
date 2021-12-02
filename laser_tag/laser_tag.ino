@@ -9,7 +9,7 @@
 
 // Global game variables
 int shot_delay = 200;
-int shot_duration = 3000;
+int shot_duration = 500;
 int cooldown_period = 5000;
 int game_duration = 900000;
 int poll_game_start_interval = 2000;
@@ -44,8 +44,8 @@ NTPClient timeClient(ntpUDP);
 byte mac[6];
 char player_id[18];
 
-char server_url[] = "http://3c93-72-215-51-93.ngrok.io";  // URL for our server
-char host_name[] = "3c93-72-215-51-93.ngrok.io";
+char server_url[] = "http://2d3e-138-16-101-44.ngrok.io";  // URL for our server
+char host_name[] = "2d3e-138-16-101-44.ngrok.io";
 // char server_url[] = "http://104.131.46.88/";  // URL for our server
 
 char ssid[] = "Brown-Guest";  // network SSID (name)
@@ -161,7 +161,7 @@ void setup() {
 
   // test_calibration();
 
-  CURRENT_STATE = sNEUTRAL;
+  CURRENT_STATE = sGAME_NOT_STARTED;
   set_vest_lights(ON);
   saved_clock = millis();
   game_start_timestamp = saved_clock;
