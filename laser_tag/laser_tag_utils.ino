@@ -119,8 +119,34 @@ void make_sound(game_sound sound) {
       tone(PIEZO, 262, shot_duration);
       break;
     case HIT:
-      tone(PIEZO, 100, shot_duration);
+      tone(PIEZO, 100, 1000);
       break;
+    case GAME_OVER:
+      tone(PIEZO, 440, 100);
+      delay(100);
+      tone(PIEZO, 277, 100);
+      delay(100);
+      tone(PIEZO, 220, 100);
+      delay(100);
+      tone(PIEZO, 165, 200);
+      delay(200);
+      tone(PIEZO, 110, 200);
+      break;
+    case GAME_STARTING:
+      tone(PIEZO, 110, 100);
+      delay(100);
+      tone(PIEZO, 165, 100);
+      delay(100);
+      tone(PIEZO, 220, 100);
+      delay(100);
+      tone(PIEZO, 277, 100);
+      delay(100);
+      tone(PIEZO, 440, 100);
+      break;
+    case REVIVED:
+      tone(PIEZO, 110, 100);
+      delay(100);
+      tone(PIEZO, 440, 300);
     default:
       break;
   }

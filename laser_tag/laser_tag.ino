@@ -11,7 +11,7 @@
 int shot_delay = 200;
 int shot_duration = 500;
 int cooldown_period = 5000;
-int game_duration = 900000;
+int game_duration = 300000;
 int poll_game_start_interval = 2000;
 int vest_threshold = 500;  // We need to calibrate this
 
@@ -150,9 +150,9 @@ int get_start_time() {
 // ##################################
 
 void setup() {
-  Serial.begin(9600);
-  while (!Serial)
-    ;
+//  Serial.begin(9600);
+//  while (!Serial)
+//    ;
 
   setup_wifi();
   initialize_system();
