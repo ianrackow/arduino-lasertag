@@ -111,10 +111,10 @@ void make_sound(game_sound sound) {
   // play desired sound
   switch (sound) {
     case PEW:
-      tone(PIEZO, 262, 1000);
+      tone(PIEZO, 262, shot_duration);
       break;
     case HIT:
-      tone(PIEZO, 100, 1000);
+      tone(PIEZO, 100, shot_duration);
       break;
     default:
       break;
