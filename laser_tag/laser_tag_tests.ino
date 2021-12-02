@@ -1,3 +1,5 @@
+#include "laser_tag_tests.h"
+
 #include <Arduino.h>
 
 #include "laser_tag.h"
@@ -8,8 +10,8 @@
  */
 const char *s2str(state s) {
   switch (s) {
-    case sWAITING_FOR_GAME:
-      return "(1) WAITING_FOR_GAME";
+    case sGAME_NOT_STARTED:
+      return "(1) GAME_NOT_STARTED";
     case sNEUTRAL:
       return "(2) NEUTRAL";
     case sJUST_FIRED:

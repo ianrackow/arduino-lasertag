@@ -1,13 +1,16 @@
+#include "laser_tag_utils.h"
+
 #include <Arduino.h>
 
 #include "laser_tag.h"
 
 // PIN ASSIGNMENTS
 static int LASER = 3;
-static int TRIGGER = 5;
+static int TRIGGER = 2;
 static int LIGHT_SENSOR = A1;
 static int VEST_LIGHTS = 7;
 static int PIEZO = 4;
+static int CALIBRATE_BUTTON = 6;
 
 /*
  * Initialize system: set random, initialize arrow characters, set up LCD
@@ -18,28 +21,31 @@ void initialize_system() {
   pinMode(PIEZO, OUTPUT);
   pinMode(LIGHT_SENSOR, INPUT);
   pinMode(TRIGGER, INPUT);
+  pinMode(CALIBRATE_BUTTON, INPUT);
+
+  attachInterrupt(CALIBRATE_BUTTON, calibrate, RISING);
 }
 
 /*
- * Display "CALIBRATING" as a scroll on the LCD
+ * Calibrate photo sensors
  */
 void calibrate() {
-
+  if (CURRENT_STATE != sGAME_NOT_STARTED) {
+    return;
+  }
   int max_read = 0;
   Serial.println("Calibrating to current light");
-  for (int i = 0; i < 15; i++){
-
+  for (int i = 0; i < 15; i++) {
     int sensor_value = analogRead(LIGHT_SENSOR);
     Serial.println(sensor_value);
-    if (sensor_value > max_read){
+    if (sensor_value > max_read) {
       max_read = sensor_value;
     }
     delay(200);
   }
-  vest_threshold = max_read + 20;
+  vest_threshold = max_read + 40;
   Serial.print("Done calibrating, threshold: ");
   Serial.println(vest_threshold);
-  
 }
 
 /*
@@ -55,17 +61,17 @@ void test_calibration() {
  */
 void update_inputs() {
   trigger_pressed = digitalRead(TRIGGER);
-//  Serial.println(trigger_pressed);
+  // Serial.println(trigger_pressed);
   sensor_value = analogRead(LIGHT_SENSOR);
-//  Serial.println(sensor_value);
+  // Serial.println(sensor_value);
 }
 
 void set_vest_lights(light_status level) {
   if (level == ON) {
-//    Serial.println("Vest on");
+    // Serial.println("Vest on");
     digitalWrite(VEST_LIGHTS, HIGH);
   } else {
-//    Serial.println("Vest off");
+    // Serial.println("Vest off");
     digitalWrite(VEST_LIGHTS, LOW);
   }
 }
