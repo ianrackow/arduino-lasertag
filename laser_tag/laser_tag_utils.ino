@@ -27,7 +27,7 @@ void initialize_system() {
 }
 
 /*
- * Display "CALIBRATING" as a scroll on the LCD
+ * Calibrate photo sensors
  */
 void calibrate() {
   if (CURRENT_STATE != sGAME_NOT_STARTED) {

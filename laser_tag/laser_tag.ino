@@ -9,7 +9,7 @@
 
 // Global game variables
 int shot_delay = 1000;
-int shot_duration = 3000;
+int shot_duration = 1500;
 int cooldown_period = 10000;
 int game_duration = 300000;
 int poll_game_start_interval = 2000;
@@ -54,9 +54,6 @@ char pass[] = "R3m0t3L3@rn1ng!";
 int status = WL_IDLE_STATUS;  // the WiFi radio's status
 
 void setup_wifi() {
-  WiFi.macAddress(mac);
-  sprintf(player_id, "%02X%02X%02X%02X%02X%02X", mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]);
-  Serial.println(player_id);
   // attempt to connect to WiFi network:
   while (status != WL_CONNECTED) {
     Serial.print("Attempting to connect to: ");
@@ -64,8 +61,11 @@ void setup_wifi() {
     Serial.println(pass);
     status = WiFi.begin(ssid);  // WiFi.begin(ssid, pass) for password
     Serial.println(WiFi.status());
-    delay(10000);
+    delay(5000);
   }
+  WiFi.macAddress(mac);
+  sprintf(player_id, "%02X%02X%02X%02X%02X%02X", mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]);
+  Serial.println(player_id);
 }
 
 bool connect_to_webpage() {
@@ -160,21 +160,12 @@ void setup() {
   saved_clock = millis();
   game_start_timestamp = saved_clock;
 
-<<<<<<< HEAD
-//  Serial.println("Trying to register for game!");
-//  while (!register_for_game()){
-//    Serial.println("Trying again");
-//    delay(1000);
-//  }
-//  Serial.println("Registration successfull");
-=======
   Serial.println("Trying to register for game!");
   while (!register_for_game()) {
     Serial.println("Trying again");
     delay(1000);
   }
   Serial.println("Registration successfull");
->>>>>>> 4325f2c3472afe49bb24558afa65d8c0ee891c2e
 
   // Watchdog configuration
   NVIC_DisableIRQ(WDT_IRQn);
@@ -213,13 +204,7 @@ void loop() {
   WDT->CLEAR.reg = 0xA5;
   CURRENT_STATE = update_fsm(CURRENT_STATE, millis(), trigger_pressed, sensor_value, received_packet);
   WDT->CLEAR.reg = 0xA5;
-<<<<<<< HEAD
-//  Serial.println(CURRENT_STATE);
   delay(100);
-=======
-  // Serial.println(CURRENT_STATE);
-  delay(500);
->>>>>>> 4325f2c3472afe49bb24558afa65d8c0ee891c2e
 #endif
 }
 
