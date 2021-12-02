@@ -30,9 +30,6 @@ void initialize_system() {
  * Calibrate photo sensors
  */
 void calibrate() {
-  if (CURRENT_STATE != sGAME_NOT_STARTED) {
-    return;
-  }
   int max_read = 0;
   Serial.println("Calibrating to current light");
   for (int i = 0; i < 15; i++) {

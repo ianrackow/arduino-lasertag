@@ -8,10 +8,10 @@
 //#define TESTING
 
 // Global game variables
-int shot_delay = 1000;
-int shot_duration = 1500;
+int shot_delay = 200;
+int shot_duration = 3000;
 int cooldown_period = 10000;
-int game_duration = 300000;
+int game_duration = 900000;
 int poll_game_start_interval = 2000;
 int vest_threshold = 500;  // We need to calibrate this
 
