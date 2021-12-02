@@ -45,10 +45,8 @@ void calibrate() {
   Serial.println(vest_threshold);
 
   if (CURRENT_STATE == sGAME_OVER) {
-    CURRENT_STATE = sGAME_NOT_STARTED;
-    set_vest_lights(ON);
-    saved_clock = millis();
-    game_start_timestamp = saved_clock;
+    while (true)
+      ;
   }
 }
 

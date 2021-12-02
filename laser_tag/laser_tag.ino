@@ -44,8 +44,8 @@ NTPClient timeClient(ntpUDP);
 byte mac[6];
 char player_id[18];
 
-char server_url[] = "http://2d3e-138-16-101-44.ngrok.io";  // URL for our server
-char host_name[] = "2d3e-138-16-101-44.ngrok.io";
+char server_url[] = "http://2030-138-16-110-48.ngrok.io";  // URL for our server
+char host_name[] = "2030-138-16-110-48.ngrok.io";
 // char server_url[] = "http://104.131.46.88/";  // URL for our server
 
 char ssid[] = "Brown-Guest";  // network SSID (name)
