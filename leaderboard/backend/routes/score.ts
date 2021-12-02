@@ -62,7 +62,7 @@ router.get("/setState", (req, res) => {
 });
 
 router.get("/start", (_, res) => {
-  if (state === State.Registration) {
+  if (state !== State.Start) {
     res.json(-1);
   } else if (state === State.Start) {
     res.json(startTime.unix());
@@ -72,6 +72,7 @@ router.get("/start", (_, res) => {
 router.get("/register", (req, res) => {
   console.log(state);
   if (state === State.Registration) {
+    console.log(req);
     const playerId = (req.query.id as string | undefined) ?? req.ip;
 
     console.log("adding player", playerId);
