@@ -43,6 +43,13 @@ void calibrate() {
   vest_threshold = max_read + 40;
   Serial.print("Done calibrating, threshold: ");
   Serial.println(vest_threshold);
+
+  if (CURRENT_STATE == sGAME_OVER) {
+    CURRENT_STATE = sGAME_NOT_STARTED;
+    set_vest_lights(ON);
+    saved_clock = millis();
+    game_start_timestamp = saved_clock;
+  }
 }
 
 /*
