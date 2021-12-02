@@ -47,10 +47,10 @@ char player_id[18];
 char server_url[] = "http://3c93-72-215-51-93.ngrok.io";  // URL for our server
 char host_name[] = "3c93-72-215-51-93.ngrok.io";
 // char server_url[] = "http://104.131.46.88/";  // URL for our server
-// char ssid[] = "Brown-Guest";                  // network SSID (name)
-// char pass[] = "";                             // for networks that require a password
-char ssid[] = "29 CREIGHTON - 1";
-char pass[] = "R3m0t3L3@rn1ng!";
+char ssid[] = "Brown-Guest";                  // network SSID (name)
+char pass[] = "";                             // for networks that require a password
+//char ssid[] = "29 CREIGHTON - 1";
+//char pass[] = "R3m0t3L3@rn1ng!";
 int status = WL_IDLE_STATUS;  // the WiFi radio's status
 
 void setup_wifi() {
@@ -86,7 +86,7 @@ bool register_for_game() {
   if (client.connect(server_url, 80)) {
     String response = "";
     Serial.println("player_id: " + String(player_id));
-    client.println("GET /api/score/register?id=banana HTTP/1.0");
+    client.println("GET /api/score/register?id=" + String(player_id) +  " HTTP/1.0");
     client.println("Host: " + String(host_name));
     client.println();
 
