@@ -1,5 +1,9 @@
 #pragma once
 
+#include "SimpleTimer.h"
+/* SimpleTimer is necessary for the sound timer, which allows
+sounds to play asynchronously alongside the FSM code. */
+
 typedef enum {
   sGAME_NOT_STARTED = 0,
   sCOUNTDOWN_TILL_START = 1,
@@ -70,4 +74,17 @@ extern int trigger_pressed;
 extern int sensor_value;
 
 // FSM state
-extern state CURRENT_STATE;
+extern state CURRENT_STATE; 
+
+// ———————————————
+// Sound
+// ———————————————
+
+/** Timer object for sounds. */
+extern SimpleTimer sound_player;
+
+/** Whether a sound is currently playing. */
+extern bool is_playing_sound;
+
+/** The last type of sound that _began_ playing. */
+extern game_sound last_played_sound;
