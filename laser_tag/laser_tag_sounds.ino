@@ -32,8 +32,8 @@ const float NOTE_TO_HZ_COEFF = 1.059463094359;
 // Sound Constants
 // ———————————————————
 
-const int PEW_TIMER_INTERVAL_MS = 8;
-const int PEW_SAMPLES = 62;
+const int PEW_TIMER_INTERVAL_MS = 12;
+const int PEW_SAMPLES = 40;
 
 const float PEW_BASE_NOTE = 71;
 const float PEW_AMOUNT_NOTES = 11;
@@ -41,9 +41,9 @@ const float PEW_SPEED_HZ = 8.2;
 
 // ———
 
-const int HIT_TIMER_INTERVAL_MS = 8;
-const int HIT_SAMPLES = 160;
-const int HIT_OSC_NUM_SAMPLES = 75;
+const int HIT_TIMER_INTERVAL_MS = 12;
+const int HIT_SAMPLES = 106;
+const int HIT_OSC_NUM_SAMPLES = 50;
 
 const float HIT_BASE_NOTE = 66;
 const float HIT_AMOUNT_NOTES = 16;
@@ -51,8 +51,8 @@ const float HIT_SPEED_HZ = 1.15;
 
 // ———
 
-const int REVIV_TIMER_INTERVAL_MS = 8;
-const int REVIV_SAMPLES = 70;
+const int REVIV_TIMER_INTERVAL_MS = 12;
+const int REVIV_SAMPLES = 46;
 
 const int REVIV_DURATION_MS = 560;
 const int REVIV_TIMESHIFT_MS = 200;

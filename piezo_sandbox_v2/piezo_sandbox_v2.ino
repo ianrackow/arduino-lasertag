@@ -35,32 +35,20 @@ void setup() {
   while (!Serial);
 }
 
+unsigned long last_tested_sound_ms = 0;
+int sound_test_counter = 1;
+
 void loop() {
-  /* Handle the button press. */ 
-  if (millis() - last_button_check_ms >= BUTTON_CHECK_INTERVAL_MS) {
-//    Serial.print(millis());
-//    Serial.print(" // ");
-//    Serial.println(last_button_check_ms);
-    bool curr_button_read = digitalRead(BUTTON_PIN);
-    Serial.println(digitalRead(BUTTON_PIN));
-
-    if (millis() - last_button_press_ms > 120
-      && curr_button_read == HIGH
-      && last_button_read == LOW
-    ) {
-      handle_button_press();
-      last_button_press_ms = millis();
-    }
-    
-    last_button_read = curr_button_read;
-    last_button_check_ms = millis();
-  } else {
-      Serial.print("-");
+  if (sound_test_counter <= 5 && millis() - last_tested_sound_ms > 2500) {
+    Serial.println("Now playing sounds");
+    make_sound((game_sound)sound_test_counter);
+    sound_test_counter++;
+    last_tested_sound_ms = millis();
   }
-
+  
   /* Run sound. */
   sound_player.run();
-  delay(7);
+  delay(12);
 }
 
 // ####################################
