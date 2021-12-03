@@ -28,6 +28,7 @@ int sensor_value;
 
 state CURRENT_STATE;
 
+// Sound
 SimpleTimer sound_player;
 
 // ########### WIFI CODE ############
@@ -213,7 +214,7 @@ void loop() {
   CURRENT_STATE = update_fsm(CURRENT_STATE, millis(), trigger_pressed, sensor_value, received_packet);
   WDT->CLEAR.reg = 0xA5;
   sound_player.run();
-  delay(8);
+  delay(7);
 #endif
 }
 
