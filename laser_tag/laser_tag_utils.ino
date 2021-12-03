@@ -3,6 +3,7 @@
 #include <Arduino.h>
 
 #include "laser_tag.h"
+#include "laser_tag_sounds.h"
 
 // PIN ASSIGNMENTS
 static int LASER = 3;
@@ -113,43 +114,73 @@ void set_laser(int level) {
 }
 
 void make_sound(game_sound sound) {
-  // play desired sound
+  // Play desried sound.
   switch (sound) {
     case PEW:
-      tone(PIEZO, 262, shot_duration);
+      start_sound(sound);
+      sound_player.setTimer(PEW_TIMER_INTERVAL_MS, play_next_pew_note, PEW_SAMPLES);
+      sound_player.setTimeout(PEW_TIMER_INTERVAL_MS * PEW_SAMPLES, end_sound);
       break;
     case HIT:
-      tone(PIEZO, 100, 1000);
-      break;
-    case GAME_OVER:
-      tone(PIEZO, 440, 100);
-      delay(100);
-      tone(PIEZO, 277, 100);
-      delay(100);
-      tone(PIEZO, 220, 100);
-      delay(100);
-      tone(PIEZO, 165, 200);
-      delay(200);
-      tone(PIEZO, 110, 200);
-      break;
-    case GAME_STARTING:
-      tone(PIEZO, 110, 100);
-      delay(100);
-      tone(PIEZO, 165, 100);
-      delay(100);
-      tone(PIEZO, 220, 100);
-      delay(100);
-      tone(PIEZO, 277, 100);
-      delay(100);
-      tone(PIEZO, 440, 100);
+      start_sound(sound);
+      sound_player.setTimer(HIT_TIMER_INTERVAL_MS, play_next_hit_note, HIT_SAMPLES);
+      sound_player.setTimeout(HIT_TIMER_INTERVAL_MS * HIT_SAMPLES, end_sound);
       break;
     case REVIVED:
-      tone(PIEZO, 110, 100);
-      delay(100);
-      tone(PIEZO, 440, 300);
-    default:
+    case GAME_STARTING:
+      start_sound(sound);
+      sound_player.setTimer(REVIV_TIMER_INTERVAL_MS, play_next_reviv_note, REVIV_SAMPLES);
+      sound_player.setTimeout(REVIV_TIMER_INTERVAL_MS * REVIV_SAMPLES, end_sound);
+      break;
+    case GAME_OVER:
+      start_sound(sound);
+      // Opening jingle:
+      sound_player.setTimer(GAME_OVER_JINGLE_INTERVAL_MS, play_game_over_jingle, GAME_OVER_JINGLE_SIZE);
+      // Finishing note:
+      sound_player.setTimeout(GAME_OVER_JINGLE_INTERVAL_MS * GAME_OVER_JINGLE_SIZE, play_game_over_finisher);
+      sound_player.setTimeout(
+        GAME_OVER_JINGLE_INTERVAL_MS * GAME_OVER_JINGLE_SIZE + GAME_OVER_FINISHER_DURATION_MS,
+        end_sound
+      );
       break;
   }
+
+  // switch (sound) {
+  //   case PEW:
+  //     tone(PIEZO, 262, shot_duration);
+  //     break;
+  //   case HIT:
+  //     tone(PIEZO, 100, 1000);
+  //     break;
+  //   case GAME_OVER:
+  //     tone(PIEZO, 440, 100);
+  //     delay(100);
+  //     tone(PIEZO, 277, 100);
+  //     delay(100);
+  //     tone(PIEZO, 220, 100);
+  //     delay(100);
+  //     tone(PIEZO, 165, 200);
+  //     delay(200);
+  //     tone(PIEZO, 110, 200);
+  //     break;
+  //   case GAME_STARTING:
+  //     tone(PIEZO, 110, 100);
+  //     delay(100);
+  //     tone(PIEZO, 165, 100);
+  //     delay(100);
+  //     tone(PIEZO, 220, 100);
+  //     delay(100);
+  //     tone(PIEZO, 277, 100);
+  //     delay(100);
+  //     tone(PIEZO, 440, 100);
+  //     break;
+  //   case REVIVED:
+  //     tone(PIEZO, 110, 100);
+  //     delay(100);
+  //     tone(PIEZO, 440, 300);
+  //   default:
+  //     break;
+  // }
 }
 
 void report_hit() {
