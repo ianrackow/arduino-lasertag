@@ -255,18 +255,19 @@ state update_fsm(state cur_state, long mils, int trigger_pressed, int sensor_val
         make_sound(GAME_OVER);
         set_vest_lights(OFF);
         next_state = sGAME_OVER;
-      } else if (trigger_pressed == 1 && sensor_value < vest_threshold) {  // Transition 2-3
+      } else if (sensor_value >= vest_threshold) {  // Transition from 2-4
+        set_laser(LOW);
+        set_vest_lights(OFF);
+        make_sound(HIT);
+        report_hit();
+        saved_clock = mils;
+        deaths = deaths + 1;
+        next_state = sHIT;
+      } else if (trigger_pressed == 1) {  // Transition 2-3
         set_laser(HIGH);
         make_sound(PEW);
         saved_clock = mils;
         next_state = sJUST_FIRED;
-      } else if (sensor_value >= vest_threshold) {  // Transition from 2-4
-        set_vest_lights(OFF);
-        report_hit();
-        saved_clock = mils;
-        deaths = deaths + 1;
-        make_sound(HIT);
-        next_state = sHIT;
       } else {
         next_state = sNEUTRAL;
       }
@@ -314,16 +315,17 @@ state update_fsm(state cur_state, long mils, int trigger_pressed, int sensor_val
         make_sound(GAME_OVER);
         set_vest_lights(OFF);
         next_state = sGAME_OVER;
-      } else if ((mils - saved_clock) >= shot_delay && sensor_value < vest_threshold) {  // Transition 6-2
-        set_vest_lights(ON);
-        next_state = sNEUTRAL;
       } else if (sensor_value >= vest_threshold) {  // Transition 6-4
+        set_laser(LOW);
         set_vest_lights(OFF);
         make_sound(HIT);
         report_hit();
         deaths = deaths + 1;
         saved_clock = mils;
         next_state = sHIT;
+      } else if ((mils - saved_clock) >= shot_delay) {  // Transition 6-2
+        set_vest_lights(ON);
+        next_state = sNEUTRAL;
       } else {
         next_state = sGUN_COOLDOWN;
       }
