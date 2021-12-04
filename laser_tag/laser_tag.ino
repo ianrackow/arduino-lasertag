@@ -267,6 +267,7 @@ state update_fsm(state cur_state, long mils, int trigger_pressed, int sensor_val
         set_laser(HIGH);
         make_sound(PEW);
         saved_clock = mils;
+        trigger_pressed = 0;
         next_state = sJUST_FIRED;
       } else {
         next_state = sNEUTRAL;
