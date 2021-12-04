@@ -19,7 +19,6 @@ int vest_threshold = 500;  // We need to calibrate this
 int deaths = 0;
 int game_start_timestamp = 0;
 int saved_clock = 0;
-int countdown = 5000;
 server_packet received_packet = GAME_IDLE;
 
 // FSM inputs

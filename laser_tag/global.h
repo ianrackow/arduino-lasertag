@@ -66,7 +66,6 @@ extern int vest_threshold;  // We need to calibrate this
 extern int deaths;
 extern int game_start_timestamp;
 extern int saved_clock;
-extern int countdown;
 extern server_packet received_packet;
 
 // FSM inputs
