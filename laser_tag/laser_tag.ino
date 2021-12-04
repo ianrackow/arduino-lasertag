@@ -166,7 +166,7 @@ void setup() {
   CURRENT_STATE = sGAME_NOT_STARTED;
   set_vest_lights(ON);
   saved_clock = millis();
-  game_start_timestamp = saved_clock;
+  game_start_timestamp = GAME_START_NOT_SET;
 
   Serial.println("Trying to register for game!");
   while (!register_for_game()) {
@@ -222,16 +222,15 @@ state update_fsm(state cur_state, long mils, int trigger_pressed, int sensor_val
   Serial.println(cur_state);
   switch (cur_state) {
     case sGAME_NOT_STARTED:
-      if ((mils - saved_clock) > poll_game_start_interval) {
+      if (game_start_timestamp != GAME_START_NOT_SET) {  // Transition from 0-1
+        Serial.println("Server gave us a start timestamp! :");
+        Serial.println(game_start_timestamp);
+        next_state = sCOUNTDOWN_TILL_START;
+      } else if ((mils - saved_clock) >= poll_game_start_interval) {
         game_start_timestamp = get_start_time();
         Serial.println(game_start_timestamp);
-        if (game_start_timestamp != GAME_START_NOT_SET) {  // Transition from 0-1
-          Serial.println("Server gave us a start timestamp! :");
-          Serial.println(game_start_timestamp);
-          next_state = sCOUNTDOWN_TILL_START;
-        } else {
-          saved_clock = mils;
-        }
+        saved_clock = mils;
+        next_state = sGAME_NOT_STARTED;  // Transition from 0-0
       } else {
         next_state = sGAME_NOT_STARTED;  // Transition from 0-0
       }
@@ -249,7 +248,6 @@ state update_fsm(state cur_state, long mils, int trigger_pressed, int sensor_val
       } else {  // Transition from 1-1
         next_state = sCOUNTDOWN_TILL_START;
       }
-
       break;
     }
     case sNEUTRAL:
