@@ -8,9 +8,9 @@
 //#define TESTING
 
 // Global game variables
-int shot_delay = 200;
 int shot_duration = 500;
-int cooldown_period = 5000;
+int shot_cooldown = 200;
+int hit_cooldown = 5000;
 int game_duration = 300000;
 int poll_game_start_interval = 2000;
 int vest_threshold = 500;  // We need to calibrate this
@@ -299,7 +299,7 @@ state update_fsm(state cur_state, long mils, int trigger_pressed, int sensor_val
         make_sound(GAME_OVER);
         set_vest_lights(OFF);
         next_state = sGAME_OVER;
-      } else if ((mils - saved_clock) >= cooldown_period) {  // Transition from 4-2
+      } else if ((mils - saved_clock) >= hit_cooldown) {  // Transition from 4-2
         make_sound(REVIVED);
         set_vest_lights(ON);
         next_state = sNEUTRAL;
@@ -324,7 +324,7 @@ state update_fsm(state cur_state, long mils, int trigger_pressed, int sensor_val
         deaths = deaths + 1;
         saved_clock = mils;
         next_state = sHIT;
-      } else if ((mils - saved_clock) >= shot_delay) {  // Transition 6-2
+      } else if ((mils - saved_clock) >= shot_cooldown) {  // Transition 6-2
         set_vest_lights(ON);
         next_state = sNEUTRAL;
       } else {

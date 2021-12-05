@@ -55,9 +55,9 @@ typedef struct {
 } state_vars;
 
 // Global game variables
-extern int shot_delay;
 extern int shot_duration;
-extern int cooldown_period;
+extern int shot_cooldown;
+extern int hit_cooldown;
 extern int game_duration;
 extern int poll_game_start_interval;
 extern int vest_threshold;  // We need to calibrate this
@@ -73,7 +73,7 @@ extern int trigger_pressed;
 extern int sensor_value;
 
 // FSM state
-extern state CURRENT_STATE; 
+extern state CURRENT_STATE;
 
 // ———————————————
 // Sound
