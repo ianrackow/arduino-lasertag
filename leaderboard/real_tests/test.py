@@ -8,7 +8,7 @@ def test():
 
     r = requests.get('http://127.0.0.1:8888/api/score/setState?state=starth')
     print(r)
-    assert 'bad state' in r.json()
+    assert r.status_code == 400
 
     r = requests.get('http://127.0.0.1:8888/api/score/register')
     print(r)
