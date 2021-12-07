@@ -11,7 +11,9 @@
 const char *s2str(state s) {
   switch (s) {
     case sGAME_NOT_STARTED:
-      return "(1) GAME_NOT_STARTED";
+      return "(0) GAME_NOT_STARTED";
+    case sCOUNTDOWN_TILL_START:
+      return "(1) COUNTDOWN_TILL_START";
     case sNEUTRAL:
       return "(2) NEUTRAL";
     case sJUST_FIRED:
