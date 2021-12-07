@@ -184,16 +184,14 @@ void setup() {
   game_start_time = 0;
   curr_time = 0;
 
-
-  #ifndef TESTING
+#ifndef TESTING
   Serial.println("Trying to register for game!");
   while (!register_for_game()) {
     Serial.println("Trying again");
     delay(1000);
   }
   Serial.println("Registration successful");
-  #endif
-  
+#endif
 
   // Watchdog configuration
   NVIC_DisableIRQ(WDT_IRQn);
