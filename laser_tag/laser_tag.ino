@@ -237,17 +237,13 @@ void loop() {
 
 state update_fsm(state cur_state, long mils, int trigger_pressed, int sensor_value) {
   state next_state = cur_state;
-  Serial.println(cur_state);
   switch (cur_state) {
     case sGAME_NOT_STARTED:
       if (game_start_time > 0) {  // Transition from 0-1
-        Serial.println("Server gave us a start timestamp! :");
-        Serial.println(game_start_time);
         curr_time = get_current_time();
         next_state = sCOUNTDOWN_TILL_START;
       } else if ((mils - saved_clock) >= poll_game_start_interval) {
         game_start_time = get_start_time();
-        Serial.println(game_start_time);
         saved_clock = mils;
         next_state = sGAME_NOT_STARTED;  // Transition from 0-0
       } else {
@@ -256,7 +252,6 @@ state update_fsm(state cur_state, long mils, int trigger_pressed, int sensor_val
       break;
     case sCOUNTDOWN_TILL_START: {
       if (curr_time >= game_start_time) {  // Transition from 1-2
-        Serial.println("Game started!");
         make_sound(GAME_STARTING);
         set_vest_lights(ON);
         game_start_time = mils;
