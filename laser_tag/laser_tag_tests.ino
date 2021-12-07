@@ -28,22 +28,6 @@ const char *s2str(state s) {
 }
 
 /*
- * Helper function for printing packets
- */
-const char *p2str(server_packet p) {
-  switch (p) {
-    case INVALID_PACKET:
-      return "(0) INVALID_PACKET";
-    case GAME_IDLE:
-      return "(1) GAME_IDLE";
-    case GAME_START:
-      return "(2) GAME_START";
-    default:
-      return "???";
-  }
-}
-
-/*
  * Given a start state, inputs, and starting values for state variables, tests that
  * update_fsm returns the correct end state and updates the state variables correctly
  * returns true if this is the case (test passed) and false otherwise (test failed)
@@ -59,7 +43,7 @@ bool test_transition(state start_state,
   deaths = start_state_vars.deaths;
   game_start_time = start_state_vars.game_start_time;
   saved_clock = start_state_vars.saved_clock;
-  state result_state = update_fsm(start_state, test_state_inputs.mils, test_state_inputs.trigger_pressed, test_state_inputs.sensor_value, test_state_inputs.received_packet);
+  state result_state = update_fsm(start_state, test_state_inputs.mils, test_state_inputs.trigger_pressed, test_state_inputs.sensor_value);
   bool passed_test = (end_state == result_state and
                       deaths == end_state_vars.deaths and
                       game_start_time == end_state_vars.game_start_time and
@@ -78,7 +62,7 @@ bool test_transition(state start_state,
     Serial.println(s_to_print);
     sprintf(s_to_print, "End state expected: %s | actual: %s", s2str(end_state), s2str(result_state));
     Serial.println(s_to_print);
-    sprintf(s_to_print, "Inputs: mils %ld | trigger_pressed %d | sensor_value %d | received_packet %s", test_state_inputs.mils, test_state_inputs.trigger_pressed, test_state_inputs.sensor_value, p2str(test_state_inputs.received_packet));
+    sprintf(s_to_print, "Inputs: mils %ld | trigger_pressed %d | sensor_value %d", test_state_inputs.mils, test_state_inputs.trigger_pressed, test_state_inputs.sensor_value);
     Serial.println(s_to_print);
     sprintf(s_to_print, "    %s | %s | %s", "deaths", "game_start_time", "saved_clock");
     Serial.println(s_to_print);

@@ -15,13 +15,6 @@ typedef enum {
 } state;
 
 typedef enum {
-  INVALID_PACKET = 0,
-  GAME_START_NOT_SET = -1,
-  GAME_IDLE = 1,
-  GAME_START = 2,
-} server_packet;
-
-typedef enum {
   ON = 1,
   OFF = 2,
 } light_status;
@@ -41,7 +34,6 @@ typedef struct {
   long mils;
   int trigger_pressed;
   int sensor_value;
-  server_packet received_packet;
 } state_inputs;
 
 /*
@@ -51,7 +43,6 @@ typedef struct {
   int deaths;
   int game_start_time;
   int saved_clock;
-  int countdown;
   int curr_time;
 } state_vars;
 
@@ -67,7 +58,6 @@ extern int vest_threshold;  // We need to calibrate this
 extern int deaths;
 extern int game_start_time;
 extern int saved_clock;
-extern server_packet received_packet;
 extern int curr_time;
 
 // FSM inputs

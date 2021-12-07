@@ -19,7 +19,6 @@ int vest_threshold = 500;  // We need to calibrate this
 int deaths;
 int game_start_time;
 int saved_clock;
-server_packet received_packet;
 int curr_time;
 
 // FSM inputs
@@ -219,14 +218,14 @@ void loop() {
   WDT->CLEAR.reg = 0xA5;
   update_inputs();
   WDT->CLEAR.reg = 0xA5;
-  CURRENT_STATE = update_fsm(CURRENT_STATE, millis(), trigger_pressed, sensor_value, received_packet);
+  CURRENT_STATE = update_fsm(CURRENT_STATE, millis(), trigger_pressed, sensor_value);
   WDT->CLEAR.reg = 0xA5;
   sound_player.run();
   delay(12);
 #endif
 }
 
-state update_fsm(state cur_state, long mils, int trigger_pressed, int sensor_value, server_packet received_packet) {
+state update_fsm(state cur_state, long mils, int trigger_pressed, int sensor_value) {
   state next_state = cur_state;
   Serial.println(cur_state);
   switch (cur_state) {
