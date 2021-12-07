@@ -233,6 +233,7 @@ state update_fsm(state cur_state, long mils, int trigger_pressed, int sensor_val
       if (game_start_time > 0) {  // Transition from 0-1
         Serial.println("Server gave us a start timestamp! :");
         Serial.println(game_start_time);
+        curr_time = get_current_time();
         next_state = sCOUNTDOWN_TILL_START;
       } else if ((mils - saved_clock) >= poll_game_start_interval) {
         game_start_time = get_start_time();
@@ -273,7 +274,6 @@ state update_fsm(state cur_state, long mils, int trigger_pressed, int sensor_val
         set_laser(HIGH);
         make_sound(PEW);
         saved_clock = mils;
-        trigger_pressed = 0;
         next_state = sJUST_FIRED;
       } else {
         next_state = sNEUTRAL;
