@@ -75,12 +75,12 @@ bool test_transition(state start_state,
   return verbos;
 }
 
-const state test_states_in[17] = {(state)1, (state)1, (state)2, (state)2, (state)2, (state)2, (state)3, (state)3, (state)3, (state)3, (state)4, (state)4, (state)4, (state)6, (state)6, (state)6, (state)6};
-const state test_states_out[17] = {(state)1, (state)2, (state)2, (state)3, (state)4, (state)5, (state)3, (state)4, (state)5, (state)6, (state)4, (state)2, (state)5, (state)6, (state)2, (state)4, (state)5};
-const state_inputs test_input[17] = {{0, 0, 0, (server_packet)GAME_IDLE}, {4000, 0, 0, (server_packet)GAME_START}, {9000, 0, 400, (server_packet)0}, {5000, 1, 400, (server_packet)0}, {60000, 0, 600, (server_packet)0}, {400000, 0, 0, (server_packet)0}, {60000, 0, 400, (server_packet)0}, {60000, 0, 600, (server_packet)0}, {300201, 0, 0, (server_packet)0}, {60000, 0, 400, (server_packet)0}, {60000, 0, 0, (server_packet)0}, {60000, 0, 0, (server_packet)0}, {503000, 0, 0, (server_packet)0}, {60000, 0, 400, (server_packet)0}, {60000, 0, 400, (server_packet)0}, {60000, 0, 600, (server_packet)0}, {310000, 0, 0, (server_packet)0}};
-const state_vars test_in_vars[17] = {{0, 0, 0}, {0, 0, 0}, {0, 287000, 0}, {0, 2000, 2000}, {0, 50000, 0}, {0, 3000, 0}, {0, 50000, 59950}, {0, 50000, 0}, {0, 200, 0}, {0, 50000, 100}, {0, 50000, 55000}, {0, 50000, 50000}, {0, 203000, 0}, {0, 50000, 59800}, {0, 50000, 59600}, {1, 50000, 40000}, {0, 10000, 0}};
-const state_vars test_out_vars[17] = {{0, 0, 0}, {0, 4000, 0}, {0, 287000, 0}, {0, 2000, 5000}, {1, 50000, 60000}, {0, 3000, 0}, {0, 50000, 59950}, {1, 50000, 60000}, {0, 200, 0}, {0, 50000, 60000}, {0, 50000, 55000}, {0, 50000, 50000}, {0, 203000, 0}, {0, 50000, 59800}, {0, 50000, 59600}, {2, 50000, 60000}, {0, 10000, 0}};
-const int num_tests = 17;
+const state test_states_in[21] = {(state)0, (state)0, (state)0, (state)1, (state)1, (state)1, (state)2, (state)2, (state)2, (state)2, (state)3, (state)3, (state)3, (state)3, (state)4, (state)4, (state)4, (state)6, (state)6, (state)6, (state)6};
+const state test_states_out[21] = {(state)0, (state)0, (state)1, (state)1, (state)1, (state)2, (state)2, (state)3, (state)4, (state)5, (state)3, (state)4, (state)5, (state)6, (state)4, (state)2, (state)5, (state)6, (state)2, (state)4, (state)5};
+const state_inputs test_input[21] = {{1000, 0, 0}, {4000, 0, 0}, {0, 0, 0}, {0, 0, 0}, {4000, 0, 0}, {4000, 0, 0}, {9000, 0, 400}, {5000, 1, 400}, {60000, 0, 600}, {400000, 0, 0}, {60000, 0, 400}, {60000, 0, 600}, {300201, 0, 0}, {60000, 0, 400}, {60000, 0, 0}, {60000, 0, 0}, {503000, 0, 0}, {60000, 0, 400}, {60000, 0, 400}, {60000, 0, 600}, {310000, 0, 0}};
+const state_vars test_in_vars[21] = {{0, 0, 900, 0}, {0, 0, 1900, 0}, {0, 100, 0, 90}, {0, 100, 0, 90}, {0, 100, 0, 99}, {0, 0, 0, 100}, {0, 287000, 0, 0}, {0, 2000, 2000, 0}, {0, 50000, 0, 0}, {0, 3000, 0, 0}, {0, 50000, 59950, 0}, {0, 50000, 0, 0}, {0, 200, 0, 0}, {0, 50000, 100, 0}, {0, 50000, 55000, 0}, {0, 50000, 50000, 0}, {0, 203000, 0, 0}, {0, 50000, 59800, 0}, {0, 50000, 59600, 0}, {1, 50000, 40000, 0}, {0, 10000, 0, 0}};
+const state_vars test_out_vars[21] = {{0, 900, 0}, {0, 100, 4000, 0}, {0, 100, 0, 91}, {100, 0, 90}, {0, 100, 0, 100}, {0, 4000, 0, 100}, {287000, 0, 0}, {0, 2000, 5000, 0}, {1, 50000, 60000, 0}, {0, 3000, 0, 0}, {50000, 59950, 0}, {1, 50000, 60000, 0}, {0, 200, 0, 0}, {0, 50000, 60000, 0}, {50000, 55000, 0}, {0, 50000, 50000, 0}, {0, 203000, 0, 0}, {50000, 59800, 0}, {0, 50000, 59600, 0}, {2, 50000, 60000, 0}, {0, 10000, 0, 0}};
+const int num_tests = 21;
 
 /*
  * Runs through all the test cases defined above

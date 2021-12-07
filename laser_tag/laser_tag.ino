@@ -122,6 +122,9 @@ bool register_for_game() {
 }
 
 int get_start_time() {
+#ifdef TESTING
+  return 100;
+#else
   String response = "";
   if (client.connect(server_url, 80)) {
     // Serial.println("player_id: " + String(player_id));
@@ -149,11 +152,17 @@ int get_start_time() {
     Serial.println("Failed to fetch webpage");
     return 0;
   }
+#endif
 }
 
 int get_current_time() {
+#ifdef TESTING
+  static int next_time = 90;
+  return next_time++;
+#else
   timeClient.update();
   return timeClient.getEpochTime();
+#endif
 }
 
 // ##################################
