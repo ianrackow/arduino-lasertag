@@ -52,6 +52,7 @@ typedef struct {
   int game_start_time;
   int saved_clock;
   int countdown;
+  int curr_time;
 } state_vars;
 
 // Global game variables
@@ -67,6 +68,7 @@ extern int deaths;
 extern int game_start_time;
 extern int saved_clock;
 extern server_packet received_packet;
+extern int curr_time;
 
 // FSM inputs
 extern int trigger_pressed;

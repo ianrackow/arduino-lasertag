@@ -20,6 +20,7 @@ int deaths;
 int game_start_time;
 int saved_clock;
 server_packet received_packet;
+int curr_time;
 
 // FSM inputs
 int trigger_pressed;
@@ -151,6 +152,11 @@ int get_start_time() {
   }
 }
 
+int get_current_time() {
+  timeClient.update();
+  return timeClient.getEpochTime();
+}
+
 // ##################################
 
 void setup() {
@@ -169,6 +175,7 @@ void setup() {
   set_vest_lights(ON);
   saved_clock = millis();
   game_start_time = 0;
+  curr_time = 0;
 
   Serial.println("Trying to register for game!");
   while (!register_for_game()) {
@@ -238,16 +245,14 @@ state update_fsm(state cur_state, long mils, int trigger_pressed, int sensor_val
       }
       break;
     case sCOUNTDOWN_TILL_START: {
-      timeClient.update();
-      int ntp_epoch = timeClient.getEpochTime();
-      Serial.println(ntp_epoch);
-      if (ntp_epoch >= game_start_time) {  // Transition from 1-2
+      if (curr_time >= game_start_time) {  // Transition from 1-2
         Serial.println("Game started!");
         make_sound(GAME_STARTING);
         set_vest_lights(ON);
         game_start_time = mils;
         next_state = sNEUTRAL;
       } else {  // Transition from 1-1
+        curr_time = get_current_time();
         next_state = sCOUNTDOWN_TILL_START;
       }
       break;
