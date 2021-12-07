@@ -1,3 +1,7 @@
+#include "laser_tag_sounds.h"
+
+#include <Arduino.h>
+
 // ———————————————————
 // PIN ASSIGNMENT
 // ———————————————————
@@ -23,7 +27,7 @@ game_sound last_played_sound;
 
 /** A4 is the 69th note (A0 is 21, C1 is 24.) */
 const int A4_NOTE = 69;
-const double A4_FREQ_HZ = 440; // Data type 'double' for efficiency.
+const double A4_FREQ_HZ = 440;  // Data type 'double' for efficiency.
 
 /** Equal to (2)^(1/12). */
 const float NOTE_TO_HZ_COEFF = 1.059463094359;
@@ -63,9 +67,9 @@ const float REVIV_CURVE_FACTOR = 1.6;
 // ———
 
 const int GAME_OVER_JINGLE[] = {
-  36, 43, 48, 52, 55, 60, 64, 67, // Arp 1
-  38, 45, 50, 54, 57, 62, 66, 69, // Arp 2
-  40, 45, 47, 52, 56, 59, 64, 68, 71 // Arp 3
+    36, 43, 48, 52, 55, 60, 64, 67,     // Arp 1
+    38, 45, 50, 54, 57, 62, 66, 69,     // Arp 2
+    40, 45, 47, 52, 56, 59, 64, 68, 71  // Arp 3
 };
 const int GAME_OVER_JINGLE_SIZE = 25;
 const int GAME_OVER_JINGLE_INTERVAL_MS = 72;
@@ -90,19 +94,18 @@ int convert_note_to_hz(float note) {
 
 /**
  * This represents an oscilliation function.
- * 
+ *
  * @param {float} speed_hz – "Oscillation frequency." The higher this is,
  *    the faster the cycle (and the more times the cycle completes in 1 second.)
  * @param {float} amount_notes – Another way of saying "amplitude."
  *    The higher this is, the more extreme the wobble.
  * @param {float} base_note – The base note for the oscillation.
  * @param {long} time_us – Time in microseconds.
- * 
+ *
  * @returns {int} Audio frequency value at the specified time, in Hz.
  */
 float osc_to_note(
-    bool is_cos, float speed_hz, float amount_notes, float base_note, long time_us
-) {
+    bool is_cos, float speed_hz, float amount_notes, float base_note, long time_us) {
   // 1 second = 1,000,000 ms
   float time_s = time_us / (float)1000000;
   double value_note;
@@ -116,17 +119,16 @@ float osc_to_note(
 
 /**
  * This represents a sweep function. This sweep's equation is x^curve_factor.
- * 
+ *
  * @param {float} curve_factor – How dire you want the curve to be. A good default is 2.
  */
 float sweep_to_note(
-  int duration_ms,
-  int timeshift_ms,
-  float start_note,
-  float end_note,
-  float curve_factor,
-  long time_us
-) {
+    int duration_ms,
+    int timeshift_ms,
+    float start_note,
+    float end_note,
+    float curve_factor,
+    long time_us) {
   float note_diff = end_note - start_note;
   float time_ms = (double)time_us / 1000.f;
 
@@ -147,14 +149,13 @@ void play_next_pew_note() {
     return;
   }
   noTone(PIEZO_PIN);
-  
+
   float note_to_play = osc_to_note(
       true,
       PEW_SPEED_HZ,
       PEW_AMOUNT_NOTES,
       PEW_BASE_NOTE,
-      PEW_TIMER_INTERVAL_MS * 1000 * timer_counter
-    );
+      PEW_TIMER_INTERVAL_MS * 1000 * timer_counter);
   int hz_to_play = convert_note_to_hz(note_to_play);
   tone(PIEZO_PIN, hz_to_play, PEW_TIMER_INTERVAL_MS);
 
@@ -170,17 +171,16 @@ void play_next_hit_note() {
 
   float note_to_play;
   if (timer_counter <= HIT_OSC_NUM_SAMPLES) {
-      // Phase 1: Oscillate.
-      note_to_play = osc_to_note(
-          false,
-          HIT_SPEED_HZ,
-          HIT_AMOUNT_NOTES,
-          HIT_BASE_NOTE, 
-          HIT_TIMER_INTERVAL_MS * 1000 * timer_counter
-        );
+    // Phase 1: Oscillate.
+    note_to_play = osc_to_note(
+        false,
+        HIT_SPEED_HZ,
+        HIT_AMOUNT_NOTES,
+        HIT_BASE_NOTE,
+        HIT_TIMER_INTERVAL_MS * 1000 * timer_counter);
   } else {
-      // Phase 2: Low note.
-      note_to_play = HIT_BASE_NOTE - HIT_AMOUNT_NOTES + 5;
+    // Phase 2: Low note.
+    note_to_play = HIT_BASE_NOTE - HIT_AMOUNT_NOTES + 5;
   }
 
   int hz_to_play = convert_note_to_hz(note_to_play);
@@ -195,15 +195,15 @@ void play_next_reviv_note() {
     return;
   }
   noTone(PIEZO_PIN);
-  
+
   float note_to_play = sweep_to_note(
       REVIV_DURATION_MS,
       REVIV_TIMESHIFT_MS,
       REVIV_START_NOTE,
       REVIV_END_NOTE,
       REVIV_CURVE_FACTOR,
-      REVIV_TIMER_INTERVAL_MS * 1000 * timer_counter // takes us
-    );
+      REVIV_TIMER_INTERVAL_MS * 1000 * timer_counter  // takes us
+  );
   int hz_to_play = convert_note_to_hz(note_to_play);
   tone(PIEZO_PIN, hz_to_play, REVIV_TIMER_INTERVAL_MS);
 
@@ -228,7 +228,7 @@ void play_game_over_jingle() {
   timer_counter += 1;
 }
 
-/** 
+/**
  * Timer function. Plays the GAME_OVER_FINISHER note.
  * Is played after the GAME_OVER jingle is done.
  */
@@ -244,11 +244,11 @@ void play_game_over_finisher() {
 // ————————————
 
 void start_sound(game_sound new_sound) {
-    timer_counter = 0;
-    is_playing_sound = true;
-    last_played_sound = new_sound;
+  timer_counter = 0;
+  is_playing_sound = true;
+  last_played_sound = new_sound;
 }
 
 void end_sound() {
-    is_playing_sound = false;
+  is_playing_sound = false;
 }

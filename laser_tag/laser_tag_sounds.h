@@ -31,5 +31,5 @@ void play_next_reviv_note();
 void play_game_over_jingle();
 void play_game_over_finisher();
 
-void start_sound();
+void start_sound(game_sound sound);
 void end_sound();
