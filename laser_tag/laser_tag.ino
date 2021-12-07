@@ -16,10 +16,10 @@ int poll_game_start_interval = 2000;
 int vest_threshold = 500;  // We need to calibrate this
 
 // FSM variables
-int deaths = 0;
-int game_start_timestamp = 0;
-int saved_clock = 0;
-server_packet received_packet = GAME_IDLE;
+int deaths;
+int game_start_timestamp;
+int saved_clock;
+server_packet received_packet;
 
 // FSM inputs
 int trigger_pressed;
@@ -54,22 +54,24 @@ char ssid[] = "Brown-Guest";  // network SSID (name)
 char pass[] = "";             // for networks that require a password
 // char ssid[] = "29 CREIGHTON - 1";
 // char pass[] = "R3m0t3L3@rn1ng!";
-int status = WL_IDLE_STATUS;  // the WiFi radio's status
 
-void attempt_connect() {
-  Serial.print("Attempting to connect to: ");
-  Serial.println(ssid);
-  Serial.println(pass);
-  status = WiFi.begin(ssid);  // WiFi.begin(ssid, pass) for password
-  Serial.println(WiFi.status());
+// Attempt to connect to WiFi network.
+// Returns true on success and false on failure.
+bool attempt_connect() {
+  int status = WiFi.begin(ssid);  // WiFi.begin(ssid, pass) for password
+  Serial.println(status);
+  return status == WL_CONNECTED;
 }
 
+// Connects to the WiFi network specified by ssid and sets player_id to the
+// Arduino's MAC address.
 void setup_wifi() {
   // attempt to connect to WiFi network:
-  attempt_connect();
-  while (status != WL_CONNECTED) {
+  Serial.print("Attempting to connect to: ");
+  Serial.println(ssid);
+  while (!attempt_connect()) {
+    Serial.println("Trying again");
     delay(5000);
-    attempt_connect();
   }
   WiFi.macAddress(mac);
   sprintf(player_id, "%02X%02X%02X%02X%02X%02X", mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]);
@@ -152,9 +154,9 @@ int get_start_time() {
 // ##################################
 
 void setup() {
-//  Serial.begin(9600);
-//  while (!Serial)
-//    ;
+  // Serial.begin(9600);
+  // while (!Serial)
+  //   ;
 
   setup_wifi();
   initialize_system();
@@ -173,7 +175,7 @@ void setup() {
     Serial.println("Trying again");
     delay(1000);
   }
-  Serial.println("Registration successfull");
+  Serial.println("Registration successful");
 
   // Watchdog configuration
   NVIC_DisableIRQ(WDT_IRQn);
