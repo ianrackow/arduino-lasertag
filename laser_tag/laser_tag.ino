@@ -157,8 +157,7 @@ int get_start_time() {
 
 int get_current_time() {
 #ifdef TESTING
-  static int next_time = 90;
-  return next_time++;
+  return curr_time++;
 #else
   timeClient.update();
   return timeClient.getEpochTime();

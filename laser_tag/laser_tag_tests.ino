@@ -43,11 +43,13 @@ bool test_transition(state start_state,
   deaths = start_state_vars.deaths;
   game_start_time = start_state_vars.game_start_time;
   saved_clock = start_state_vars.saved_clock;
+  curr_time = start_state_vars.curr_time;
   state result_state = update_fsm(start_state, test_state_inputs.mils, test_state_inputs.trigger_pressed, test_state_inputs.sensor_value);
   bool passed_test = (end_state == result_state and
                       deaths == end_state_vars.deaths and
                       game_start_time == end_state_vars.game_start_time and
-                      saved_clock == end_state_vars.saved_clock);
+                      saved_clock == end_state_vars.saved_clock and
+                      curr_time == end_state_vars.curr_time);
   if (!verbos) {
     return passed_test;
   } else if (passed_test) {
