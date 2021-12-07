@@ -66,11 +66,11 @@ bool test_transition(state start_state,
     Serial.println(s_to_print);
     sprintf(s_to_print, "Inputs: mils %ld | trigger_pressed %d | sensor_value %d", test_state_inputs.mils, test_state_inputs.trigger_pressed, test_state_inputs.sensor_value);
     Serial.println(s_to_print);
-    sprintf(s_to_print, "    %s | %s | %s", "deaths", "game_start_time", "saved_clock");
+    sprintf(s_to_print, "    %s | %s | %s | %s", "deaths", "game_start_time", "saved_clock", "curr_time");
     Serial.println(s_to_print);
-    sprintf(s_to_print, "expected: %d | %d | %d", end_state_vars.deaths, end_state_vars.game_start_time, end_state_vars.saved_clock);
+    sprintf(s_to_print, "expected: %d | %d | %d | %d", end_state_vars.deaths, end_state_vars.game_start_time, end_state_vars.saved_clock, end_state_vars.curr_time);
     Serial.println(s_to_print);
-    sprintf(s_to_print, "actual:   %d | %d | %d", deaths, game_start_time, saved_clock);
+    sprintf(s_to_print, "actual:   %d | %d | %d | %d", deaths, game_start_time, saved_clock, curr_time);
     Serial.println(s_to_print);
     return false;
   }

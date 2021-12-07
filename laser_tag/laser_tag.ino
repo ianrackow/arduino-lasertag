@@ -5,7 +5,7 @@
 #include "laser_tag_tests.h"
 #include "laser_tag_utils.h"
 
-//#define TESTING
+#define TESTING
 
 // Global game variables
 int shot_duration = 500;
@@ -13,7 +13,7 @@ int shot_cooldown = 200;
 int hit_cooldown = 5000;
 int game_duration = 300000;
 int poll_game_start_interval = 2000;
-int vest_threshold = 500;  // We need to calibrate this
+int vest_threshold = 500;
 
 // FSM variables
 int deaths;
@@ -184,12 +184,16 @@ void setup() {
   game_start_time = 0;
   curr_time = 0;
 
+
+  #ifndef TESTING
   Serial.println("Trying to register for game!");
   while (!register_for_game()) {
     Serial.println("Trying again");
     delay(1000);
   }
   Serial.println("Registration successful");
+  #endif
+  
 
   // Watchdog configuration
   NVIC_DisableIRQ(WDT_IRQn);
