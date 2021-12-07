@@ -167,9 +167,9 @@ int get_current_time() {
 // ##################################
 
 void setup() {
-  // Serial.begin(9600);
-  // while (!Serial)
-  //   ;
+   Serial.begin(9600);
+   while (!Serial)
+     ;
 
 #ifndef TESTING
   setup_wifi();
