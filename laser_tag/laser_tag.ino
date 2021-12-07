@@ -171,10 +171,12 @@ void setup() {
   // while (!Serial)
   //   ;
 
+#ifndef TESTING
   setup_wifi();
   initialize_system();
 
   calibrate();
+#endif
 
   // test_calibration();
 
