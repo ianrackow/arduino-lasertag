@@ -5,13 +5,14 @@
 #include "laser_tag_tests.h"
 #include "laser_tag_utils.h"
 
-#define TESTING
+//#define TESTING
 
 // Global game variables
 int shot_duration = 500;
 int shot_cooldown = 200;
 int hit_cooldown = 5000;
-int game_duration = 300000;
+//int game_duration = 300000;
+int game_duration = 10000;
 int poll_game_start_interval = 2000;
 int vest_threshold = 500;
 
@@ -46,8 +47,8 @@ NTPClient timeClient(ntpUDP);
 byte mac[6];
 char player_id[18];
 
-char server_url[] = "http://2030-138-16-110-48.ngrok.io";  // URL for our server
-char host_name[] = "2030-138-16-110-48.ngrok.io";
+char server_url[] = "http://8188-138-16-111-203.ngrok.io";  // URL for our server
+char host_name[] = "8188-138-16-111-203.ngrok.io";
 // char server_url[] = "http://104.131.46.88/";  // URL for our server
 
 char ssid[] = "Brown-Guest";  // network SSID (name)

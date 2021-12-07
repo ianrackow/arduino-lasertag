@@ -21,7 +21,7 @@ enum State {
   GameOver = "gameOver",
 }
 
-let state: State = State.GameOver;
+let state: State = State.Registration;
 let registeredPlayers: Players = {};
 let startTime: Moment = moment();
 
@@ -34,6 +34,8 @@ const syncData = () =>
       startTime: startTime,
     })
   );
+
+syncData();
 
 const addRegisteredPlayer = (playerId: string) =>
   (registeredPlayers[playerId] = { taggedBy: [] });
@@ -63,7 +65,7 @@ router.get("/setState", (req, res) => {
 
 router.get("/start", (_, res) => {
   if (state !== State.Start) {
-    res.json(-1);
+    res.json(0);
   } else if (state === State.Start) {
     res.json(startTime.unix());
   }
