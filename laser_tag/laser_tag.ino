@@ -17,7 +17,7 @@ int vest_threshold = 500;  // We need to calibrate this
 
 // FSM variables
 int deaths;
-int game_start_timestamp;
+int game_start_time;
 int saved_clock;
 server_packet received_packet;
 
@@ -147,7 +147,7 @@ int get_start_time() {
     return response.toInt();
   } else {
     Serial.println("Failed to fetch webpage");
-    return -1;
+    return 0;
   }
 }
 
@@ -168,7 +168,7 @@ void setup() {
   CURRENT_STATE = sGAME_NOT_STARTED;
   set_vest_lights(ON);
   saved_clock = millis();
-  game_start_timestamp = GAME_START_NOT_SET;
+  game_start_time = 0;
 
   Serial.println("Trying to register for game!");
   while (!register_for_game()) {
@@ -224,13 +224,13 @@ state update_fsm(state cur_state, long mils, int trigger_pressed, int sensor_val
   Serial.println(cur_state);
   switch (cur_state) {
     case sGAME_NOT_STARTED:
-      if (game_start_timestamp != GAME_START_NOT_SET) {  // Transition from 0-1
+      if (game_start_time > 0) {  // Transition from 0-1
         Serial.println("Server gave us a start timestamp! :");
-        Serial.println(game_start_timestamp);
+        Serial.println(game_start_time);
         next_state = sCOUNTDOWN_TILL_START;
       } else if ((mils - saved_clock) >= poll_game_start_interval) {
-        game_start_timestamp = get_start_time();
-        Serial.println(game_start_timestamp);
+        game_start_time = get_start_time();
+        Serial.println(game_start_time);
         saved_clock = mils;
         next_state = sGAME_NOT_STARTED;  // Transition from 0-0
       } else {
@@ -241,11 +241,11 @@ state update_fsm(state cur_state, long mils, int trigger_pressed, int sensor_val
       timeClient.update();
       int ntp_epoch = timeClient.getEpochTime();
       Serial.println(ntp_epoch);
-      if (ntp_epoch >= game_start_timestamp) {  // Transition from 1-2
+      if (ntp_epoch >= game_start_time) {  // Transition from 1-2
         Serial.println("Game started!");
         make_sound(GAME_STARTING);
         set_vest_lights(ON);
-        game_start_timestamp = mils;
+        game_start_time = mils;
         next_state = sNEUTRAL;
       } else {  // Transition from 1-1
         next_state = sCOUNTDOWN_TILL_START;
@@ -253,7 +253,7 @@ state update_fsm(state cur_state, long mils, int trigger_pressed, int sensor_val
       break;
     }
     case sNEUTRAL:
-      if ((mils - game_start_timestamp) >= game_duration) {  // Transition 2-5
+      if ((mils - game_start_time) >= game_duration) {  // Transition 2-5
         make_sound(GAME_OVER);
         set_vest_lights(OFF);
         next_state = sGAME_OVER;
@@ -276,7 +276,7 @@ state update_fsm(state cur_state, long mils, int trigger_pressed, int sensor_val
       }
       break;
     case sJUST_FIRED:
-      if ((mils - game_start_timestamp) >= game_duration) {  // Transition from 3-5
+      if ((mils - game_start_time) >= game_duration) {  // Transition from 3-5
         make_sound(GAME_OVER);
         set_vest_lights(OFF);
         next_state = sGAME_OVER;
@@ -297,7 +297,7 @@ state update_fsm(state cur_state, long mils, int trigger_pressed, int sensor_val
       }
       break;
     case sHIT:
-      if ((mils - game_start_timestamp) >= game_duration) {  // Transition 4-5
+      if ((mils - game_start_time) >= game_duration) {  // Transition 4-5
         make_sound(GAME_OVER);
         set_vest_lights(OFF);
         next_state = sGAME_OVER;
@@ -314,7 +314,7 @@ state update_fsm(state cur_state, long mils, int trigger_pressed, int sensor_val
       next_state = sGAME_OVER;
       break;
     case sGUN_COOLDOWN:
-      if ((mils - game_start_timestamp) >= game_duration) {  // Transition from 6-5
+      if ((mils - game_start_time) >= game_duration) {  // Transition from 6-5
         make_sound(GAME_OVER);
         set_vest_lights(OFF);
         next_state = sGAME_OVER;

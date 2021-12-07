@@ -49,7 +49,7 @@ typedef struct {
  */
 typedef struct {
   int deaths;
-  int game_start_timestamp;
+  int game_start_time;
   int saved_clock;
   int countdown;
 } state_vars;
@@ -64,7 +64,7 @@ extern int vest_threshold;  // We need to calibrate this
 
 // FSM variables
 extern int deaths;
-extern int game_start_timestamp;
+extern int game_start_time;
 extern int saved_clock;
 extern server_packet received_packet;
 

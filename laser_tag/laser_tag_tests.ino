@@ -57,12 +57,12 @@ bool test_transition(state start_state,
                      state_vars end_state_vars,
                      bool verbos) {
   deaths = start_state_vars.deaths;
-  game_start_timestamp = start_state_vars.game_start_timestamp;
+  game_start_time = start_state_vars.game_start_time;
   saved_clock = start_state_vars.saved_clock;
   state result_state = update_fsm(start_state, test_state_inputs.mils, test_state_inputs.trigger_pressed, test_state_inputs.sensor_value, test_state_inputs.received_packet);
   bool passed_test = (end_state == result_state and
                       deaths == end_state_vars.deaths and
-                      game_start_timestamp == end_state_vars.game_start_timestamp and
+                      game_start_time == end_state_vars.game_start_time and
                       saved_clock == end_state_vars.saved_clock);
   if (!verbos) {
     return passed_test;
@@ -80,11 +80,11 @@ bool test_transition(state start_state,
     Serial.println(s_to_print);
     sprintf(s_to_print, "Inputs: mils %ld | trigger_pressed %d | sensor_value %d | received_packet %s", test_state_inputs.mils, test_state_inputs.trigger_pressed, test_state_inputs.sensor_value, p2str(test_state_inputs.received_packet));
     Serial.println(s_to_print);
-    sprintf(s_to_print, "    %s | %s | %s", "deaths", "game_start_timestep", "saved_clock");
+    sprintf(s_to_print, "    %s | %s | %s", "deaths", "game_start_time", "saved_clock");
     Serial.println(s_to_print);
-    sprintf(s_to_print, "expected: %d | %d | %d", end_state_vars.deaths, end_state_vars.game_start_timestamp, end_state_vars.saved_clock);
+    sprintf(s_to_print, "expected: %d | %d | %d", end_state_vars.deaths, end_state_vars.game_start_time, end_state_vars.saved_clock);
     Serial.println(s_to_print);
-    sprintf(s_to_print, "actual:   %d | %d | %d", deaths, game_start_timestamp, saved_clock);
+    sprintf(s_to_print, "actual:   %d | %d | %d", deaths, game_start_time, saved_clock);
     Serial.println(s_to_print);
     return false;
   }
